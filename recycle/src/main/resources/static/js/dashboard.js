@@ -1,7 +1,7 @@
 let todayCountList
 let defaultMap
 
-const img = document.querySelector("#mapImage");
+const img = document.querySelector("#mapImg");
 const canvas = document.querySelector("#mapCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -17,7 +17,7 @@ let getDefaultMap = async() => {
 	document.querySelector("#mapImg").src = defaultMap.imagePath;
 
 	canvas.width = img.width;
-    canvas.height = img.height;	    	
+    canvas.height = img.height;	   
 }
 
 let getTodayCollectionCount = async () => {
@@ -61,11 +61,17 @@ stomp.connect({}, function(){
 	                break;
 				case "state":
 					break;
-	            case "robot_pose":
-					console.log(data)
-					const x = (data.x - defaultMap.originX) / defaultMap.resolution;
-				    const y = canvas.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
-					drawRobot(x, y)
+	            case "robot_pose":					
+					const mapX = (data.x - defaultMap.originX) / defaultMap.resolution;
+					const mapY = defaultMap.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
+
+					const scaleX = mapImg.clientWidth / defaultMap.width;
+					const scaleY = mapImg.clientHeight / defaultMap.height;
+
+					const canvasX = mapX * scaleX;
+					const canvasY = mapY * scaleY;
+
+					drawRobot(canvasX, canvasY);
 	                break;
 				case "detection":
 					document.querySelector("#object").innerHTML = data.object_name;
@@ -78,22 +84,7 @@ stomp.connect({}, function(){
 });
 
 
-/*let worldToCanvas = (odomX, odomY) => {
-	const x = (odomX - defaultMap.originX) / defaultMap.resolution;
-
-    const y = canvas.height - ((odomY - defaultMap.originY) / defaultMap.resolution);
-
-	//const canvasX = OFFSET_X + odomX * SCALE;
-    //const canvasY = OFFSET_Y - odomY * SCALE;
-	
-    return {
-        x:x,
-        y:y
-    };
-}*/
-
 let drawRobot = (x, y) => {
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.arc(x, y, 6, 0, Math.PI * 2);
