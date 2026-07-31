@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+      	<div class="content">
+      		<h2 class="header">Recycle Monitoring</h2>
+            <nav class="tab-menu">
+                <a href="/dashboard" class="tab active">대시보드</a>
+                <a href="/eventLog" class="tab">이벤트 로그</a>
+                <a href="/recycleHistory" class="tab">쓰레기 수거 현황</a>
+                <a href="/setting" class="tab">정보 / 설정</a>
+            </nav>
+
+            <div class="dashboard">
+                <div class="dflex mb20" style="justify-content: space-between !important;">
+                    <!-- 오늘의 작업 현황 -->
+                    <div class="today-summary">
+                        <h4>※ 오늘의 작업 현황</h4>
+
+                        <div class="summary-list">
+                            <span>탐지 <b id="todayCount">-</b></span>
+                            <span>수거 <b id="todaySuccess">-</b></span>
+                            <span>실패 <b id="todayFail">-</b></span>
+                        </div>
+                    </div>
+                    <!-- Control -->
+                    <div>
+                        <button class="control-btn start-btn">
+                            Start
+                        </button>
+                        <button class="control-btn stop-btn ml20">
+                            Stop / Return Home
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dflex">
+                    <!-- 상태 정보 -->
+                    <div class="card w250 h105">
+                        <h3>Battery</h3>
+                        <span id="battery">- %</span>
+                    </div>
+                    <div class="card w250 h105">
+                        <h3>State</h3>
+                        <span id="state">-</span>
+                    </div>
+                    <div class="card w250 h105">
+                        <h3>Detection</h3>
+                        <p>Object : <span id="object">-</span></p>
+                        <p>Confidence : <span id="confidence">- %</span></p>
+                    </div>
+                    <div class="card w250 h105">
+                        <h3>Task</h3>
+                        <p id="mission">Patrol Searching Pickup Returning Manual Error</p>
+                    </div>
+                </div>
+
+                <div class="dflex">
+                    <!-- Camera -->
+                    <div class="card camera-card w46p5 mt20 mb20">
+                        <h3>Camera</h3>
+                        <div class="camera-area">
+                            <img class="camera-area-img" src="/camera/stream" width="640">
+                        </div>
+                    </div>
+                    <!-- Map -->
+                    <div class="card map-card w46p5 mt20 mb20">
+                        <h3>Map</h3>
+                        <div class="map-area">
+                        	<img id="mapImg" class="map-area-img">
+                            <canvas id="mapCanvas" class="map-area-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      	</div>
+    </div>
+	
+	
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+<script src="/js/common.js"></script>
+<script src="/js/dashboard.js"></script>
+
+</body>
+</html>

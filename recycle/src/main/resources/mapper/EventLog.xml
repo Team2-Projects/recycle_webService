@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.recycle.dao.EventLogDao">
+
+    <select id="getEventLogCount" parameterType="com.example.recycle.dto.EventLogDto" resultType="int">
+        SELECT COUNT(*)
+        FROM EVENTLOG
+        <where>
+            <if test="eventType != null and eventType != ''">
+                eventType = #{eventType}
+            </if>
+            <if test="searchDto.startDate != null and searchDto.startDate != ''">
+                AND createTime >= #{searchDto.startDate}
+            </if>
+            <if test="searchDto.endDate != null and searchDto.endDate != ''">
+                AND createTime &lt;= #{searchDto.endDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="getEventLogList" parameterType="com.example.recycle.dto.EventLogDto" resultType="com.example.recycle.dto.EventLogDto">
+        SELECT robotId, eventType, message, note, status, createTime
+        FROM EVENTLOG
+        <where>
+            <if test="eventType != null and eventType != ''">
+                eventType = #{eventType}
+            </if>
+            <if test="searchDto.startDate != null and searchDto.startDate != ''">
+                AND createTime >= #{searchDto.startDate}
+            </if>
+            <if test="searchDto.endDate != null and searchDto.endDate != ''">
+                AND createTime &lt;= #{searchDto.endDate}
+            </if>
+        </where>
+        ORDER BY createTime DESC
+        LIMIT #{searchDto.pageSize}
+        OFFSET #{searchDto.offset}
+    </select>
+
+    <insert id="insertEventLog" parameterType="string">
+        INSERT INTO EVENTLOG (robotId, eventType, message, note, status, createTime)
+        VALUES (${robotId}, ${eventType}, ${message}, ${note}, ${status}, SYSDATE())
+    </insert>
+
+</mapper>

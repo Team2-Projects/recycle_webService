@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+      	<div class="content">
+      		<h2 class="header">Recycle Monitoring</h2>
+            <nav class="tab-menu">
+                <a href="/dashboard" class="tab">대시보드</a>
+                <a href="/eventLog" class="tab">이벤트 로그</a>
+                <a href="/recycleHistory" class="tab active">쓰레기 수거 현황</a>
+                <a href="/setting" class="tab">정보 / 설정</a>
+            </nav>
+
+            <div class="dashboard">
+                <!-- Search -->
+                <div class="search-box mb20">
+                    <input type="date" id="startDate">
+                    <span>~</span>
+                    <input type="date" id="endDate">
+                    <div>
+                        <button class="search-btn" onclick="getCollectionCount()">
+                            <img class="search-btn" src="/image/search.png" alt="검색">
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="dflex mb20 pb20" style="border-bottom: 1px solid #ddd">
+                    <div>
+                        <h3 class="mb20">📦 Summary</h3>
+                        <div class="dflex">
+                            <div class="card summary-card mr20">
+		                    	<div class="dflex">
+		                    		<div>Total Collection</div>
+		                        	<strong id="totalCount">-</strong>
+		                    	</div>
+		                        <div class="dflex">
+		                        	<div>Today Collection</div>
+		                        	<strong id="todayCount">-</strong>
+		                       	</div>
+		                    </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dflex mb20">
+                    <!-- Type -->
+                    <div class="w49p">
+                        <h3>♻️ Collection by Type</h3>
+                        <div class="card mt20">
+                            <canvas class="history-chart" id="typeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="w49p">
+                        <h3>📈 Collection by Date</h3>
+                        <div class="card mt20">
+                            <canvas class="history-chart" id="dateChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      	</div>
+    </div>
+	
+	
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+<script src="/js/lib/chart.umd.min.js"></script>
+<script src="/js/lib/chartjs-plugin-datalabels.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/recycleHistory.js"></script>
+
+</body>
+</html>

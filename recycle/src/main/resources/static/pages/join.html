@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+      	<div class="content">
+      		<h2 class="loginText">Join</h2>
+            <div class="loginContent">
+                <div class="inputDiv">
+                    <input class="loginInput mb10" type="text" name="username" id="id" placeholder="ID" />
+                    <input class="loginInput mb10" type="password" name="" id="password" placeholder="PW" />
+                    <input class="loginInput" type="text" name="" id="name" placeholder="Name" />
+                </div>
+                <div class="btnDiv">
+                    <button class="loginBtn" type="button" onclick=join()>회원가입</button>
+                    <button class="joinBtn" type="button" onclick=goLoginPage()>로그인</button>
+                </div>
+            </div>
+      	</div>
+    </div>
+	
+	
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/login.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+<script src="/js/login.js"></script>
+
+</body>
+</html>

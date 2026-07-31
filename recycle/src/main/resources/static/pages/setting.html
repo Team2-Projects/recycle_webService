@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+      	<div class="content">
+      		<h2 class="header">Recycle Monitoring</h2>
+            <nav class="tab-menu">
+                <a href="/dashboard" class="tab">대시보드</a>
+                <a href="/eventLog" class="tab">이벤트 로그</a>
+                <a href="/recycleHistory" class="tab">쓰레기 수거 현황</a>
+                <a href="/setting" class="tab active">정보 / 설정</a>
+            </nav>
+
+            <div class="dashboard">
+                <div class="dflex mb20">
+                    <div class="w49p">
+                        <h3 class="mb20">🤖 Robot Information</h3>
+                        <div class="card h215">
+                            <div>
+                                <table class="setting-table">
+                                    <tr>
+                                        <th>Robot Name</th>
+                                        <td id="robotName">TurtleBot3-01</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Robot Model</th>
+                                        <td id="robotModel">TurtleBot3 Waffle Pi</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ROS Version</th>
+                                        <td id="rosVersion">ROS2 Humble</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w49p">
+                        <h3 class="mb20">💻 System Information</h3>
+                        <div class="card h215">
+                            <div class="setting-body">
+                                <div class="progress-item">
+                                    <div class="progress-title">
+                                        <span>CPU Usage</span>
+                                        <span>62%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width:62%;"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-item">
+                                    <div class="progress-title">
+                                        <span>Memory Usage</span>
+                                        <span>48%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width:48%;"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-item">
+                                    <div class="progress-title">
+                                        <span>Disk Usage</span>
+                                        <span>37%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width:37%;"></div>
+                                    </div>
+                                </div>
+                                <!-- <div class="status-row">
+                                    <span>Network</span>
+                                    <span class="status connected">● Connected</span>
+                                </div>
+                                <div class="status-row">
+                                    <span>ROS2</span>
+                                    <span class="status connected">● Connected</span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      	</div>
+    </div>
+	
+	
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+<script src="/js/common.js"></script>
+<script src="/js/setting.js"></script>
+
+</body>
+</html>

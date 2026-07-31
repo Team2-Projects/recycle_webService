@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+      	<div class="content">
+      		<h2 class="header">Recycle Monitoring</h2>
+            <nav class="tab-menu">
+                <a href="/dashboard" class="tab">대시보드</a>
+                <a href="/eventLog" class="tab active">이벤트 로그</a>
+                <a href="/recycleHistory" class="tab">쓰레기 수거 현황</a>
+                <a href="/setting" class="tab">정보 / 설정</a>
+            </nav>
+
+            <div class="event-card mt20">
+                <div id="noteModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p id="noteText"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="event-header">
+                    <div class="event-legend">
+                        <span><i class="dot success"></i> Task</span>
+                        <span><i class="dot detect"></i> Detect</span>
+                        <span><i class="dot warning"></i> Warning</span>
+                        <span><i class="dot error"></i> Error</span>
+                    </div>
+
+                    <div class="search-row">
+                        <div class="search-item mr20">
+                            <label>Period</label>
+                            <input type="date" id="startDate">
+                            <span>~</span>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="search-item mr20">
+                            <label>Event Type</label>
+                            <select id="eventType">
+                                <option value="">All</option>
+                                <option value="PATROL_START">PATROL_START</option>
+                                <option value="PATROL_COMPLETE">PATROL_COMPLETE</option>
+                                <option value="PATROL_RESUME">PATROL_RESUME</option>
+                                <option value="OBJECT_DETECTED">OBJECT_DETECTED</option>
+                                <option value="OBJECT_PICKUP_START">OBJECT_PICKUP_START</option>
+                                <option value="OBJECT_PICKUP_SUCCESS">OBJECT_PICKUP_SUCCESS</option>
+                                <option value="OBJECT_PICKUP_FAIL">OBJECT_PICKUP_FAIL</option>
+                                <option value="BATTERY_LOW">BATTERY_LOW</option>
+                                <option value="NAVIGATION_START">NAVIGATION_START</option>
+                                <option value="NAVIGATION_FAIL">NAVIGATION_FAIL</option>
+                                <option value="USER_COMMAND">USER_COMMAND</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="search-btn" onclick="getEventLogList(1);">
+                                <img class="search-btn" src="/image/search.png" alt="검색">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="height: 630px; overflow-y: auto;">
+                    <table class="event-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Message</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eventTbody"></tbody>
+                    </table>
+                </div>
+
+                <div class="paging" id="pageDiv"></div>
+
+            </div>
+      	</div>
+    </div>
+	
+	
+<link rel="stylesheet" href="/css/common.css">
+<link rel="stylesheet" href="/css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+<script src="/js/common.js"></script>
+<script src="/js/eventLog.js"></script>
+
+</body>
+</html>
