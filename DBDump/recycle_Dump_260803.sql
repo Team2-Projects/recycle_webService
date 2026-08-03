@@ -131,6 +131,34 @@ INSERT INTO `robot` VALUES (1,'turtlebot3-01','Turtlebot3 Waffle Pi','ROS2 Humbl
 UNLOCK TABLES;
 
 --
+-- Table structure for table `robotstatus`
+--
+
+DROP TABLE IF EXISTS `robotstatus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `robotstatus` (
+  `uid` bigint NOT NULL AUTO_INCREMENT,
+  `robotId` bigint NOT NULL,
+  `eventType` varchar(50) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  `createTime` datetime NOT NULL,
+  `updateTime` datetime NOT NULL,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='로봇 실시간 상태';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `robotstatus`
+--
+
+LOCK TABLES `robotstatus` WRITE;
+/*!40000 ALTER TABLE `robotstatus` DISABLE KEYS */;
+INSERT INTO `robotstatus` VALUES (1,1,'state','Stop','2026-08-03 10:51:19','2026-08-03 18:24:06');
+/*!40000 ALTER TABLE `robotstatus` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user`
 --
 
@@ -169,4 +197,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-31 15:07:58
+-- Dump completed on 2026-08-03 18:38:59
