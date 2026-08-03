@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.recycle.dao.GeneralDao">
+
+	<select id="getRobotStatus" parameterType="com.example.recycle.dto.RobotStatus" resultType="com.example.recycle.dto.RobotStatus">
+		SELECT eventType, status
+		FROM ROBOTSTATUS
+		WHERE eventType=#{eventType}
+	</select>
+
+	<select id="getRobotStatusCount" parameterType="com.example.recycle.dto.RobotStatus" resultType="int">
+		SELECT COUNT(*) 
+		FROM ROBOTSTATUS 
+		WHERE robotId = 1 AND eventType = #{eventType}
+	</select>
+	
+    <insert id="insertRobotStatus" parameterType="com.example.recycle.dto.RobotStatus">
+        INSERT INTO ROBOTSTATUS
+		(robotId, eventType, status, createTime, updateTime)
+		VALUES(1, #{eventType}, #{status}, SYSDATE(), SYSDATE());
+    </insert>
+    
+    <update id="updateRobotStatus" parameterType="com.example.recycle.dto.RobotStatus">
+    	UPDATE ROBOTSTATUS
+		SET status=#{status}, updateTime=SYSDATE()
+		WHERE eventType=#{eventType} AND robotId = 1
+    </update>
+
+</mapper>

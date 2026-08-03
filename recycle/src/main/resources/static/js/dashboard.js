@@ -5,19 +5,47 @@ const img = document.querySelector("#mapImg");
 const canvas = document.querySelector("#mapCanvas");
 const ctx = canvas.getContext("2d");
 
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
+let displayBattery = null;
+
 document.addEventListener("DOMContentLoaded", () => {
+	getRobotState()
     getTodayCollectionCount()
 	getDefaultMap()
 });
 
-let getDefaultMap = async() => {
-	let data = {}
-	defaultMap= await apiFetch("/map/getDefaultMap", "POST", data)
-	
-	document.querySelector("#mapImg").src = defaultMap.imagePath;
+document.querySelector("#startBtn").addEventListener("click", () => {
+	sendRobotCommand("START");
+})
+document.querySelector("#stopBtn").addEventListener("click", () => {
+	sendRobotCommand("STOP");
+})
 
-	canvas.width = img.width;
-    canvas.height = img.height;	   
+let sendRobotCommand = (command) => {
+	const data = {
+		type: "command",
+		command: command
+	}
+	
+	stomp.send("/app/command", {}, JSON.stringify(data))
+}
+
+let getRobotState = async () => {
+	let data = await apiFetch("/robotStatus", "POST", {
+		eventType: "state"
+	})
+	document.querySelector("#state").innerHTML = data.status
+	if(data.status == "Running"){
+		document.querySelector("#state").style.color = "#4CAF50";
+		document.querySelector("#startBtn").classList.add("inactive-btn");
+		document.querySelector("#stopBtn").classList.remove("inactive-btn");
+	}else{
+		document.querySelector("#state").style.color = "red"
+		document.querySelector("#startBtn").classList.remove("inactive-btn");
+		document.querySelector("#stopBtn").classList.add("inactive-btn");
+	}
 }
 
 let getTodayCollectionCount = async () => {
@@ -34,10 +62,15 @@ let getTodayCollectionCount = async () => {
     document.querySelector("#todayFail").innerHTML = todayCountList.failCount
 }
 
-const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);
+let getDefaultMap = async() => {
+	let data = {}
+	defaultMap= await apiFetch("/map/getDefaultMap", "POST", data)
+	
+	document.querySelector("#mapImg").src = defaultMap.imagePath;
 
-let displayBattery = null;
+	canvas.width = img.width;
+    canvas.height = img.height;	   
+}
 
 stomp.connect({}, function(){
     stomp.subscribe(
@@ -59,7 +92,17 @@ stomp.connect({}, function(){
 			        }
 	                document.querySelector("#battery").innerHTML = Math.round(displayBattery) >= 100 ? 100 + " %" : Math.round(displayBattery) + " %";
 	                break;
-				case "state":
+				case "robot_status":
+					document.querySelector("#state").innerHTML = data.status
+					if(data.status == "Running"){
+						document.querySelector("#state").style.color = "#4CAF50";
+						document.querySelector("#startBtn").classList.add("inactive-btn");
+						document.querySelector("#stopBtn").classList.remove("inactive-btn");
+					}else{
+						document.querySelector("#state").style.color = "red"
+						document.querySelector("#startBtn").classList.remove("inactive-btn");
+						document.querySelector("#stopBtn").classList.add("inactive-btn");
+					}
 					break;
 	            case "robot_pose":					
 					const mapX = (data.x - defaultMap.originX) / defaultMap.resolution;

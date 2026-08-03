@@ -30,28 +30,10 @@ public class RobotHandler extends AbstractWebSocketHandler {
     @Autowired
     private GeneralServiceI generalServiceI;
     
+    
     private volatile byte[] latestFrame;
 
-//    @Override
-//    public void afterConnectionEstablished(
-//            WebSocketSession session) {
-//
-//        System.out.println(
-//            "ROS CONNECT : " + session.getId()
-//        );
-//    }
-//    @Override
-//    public void afterConnectionClosed(
-//            WebSocketSession session,
-//            CloseStatus status) {
-//
-//        System.out.println(
-//            "ROS CLOSED : " + status
-//        );
-//    }
-    
-    
-    
+ 
 
     @Override
     protected void handleTextMessage(
@@ -72,9 +54,16 @@ public class RobotHandler extends AbstractWebSocketHandler {
 
         	    robotStatus.setEventType(json.get("eventType").asText());
         	    robotStatus.setStatus(json.get("status").asText());
-
         	    
-        	    generalServiceI.insertRobotStatus(robotStatus);
+        	    RobotStatus getRobotStatus = new RobotStatus();
+        	    getRobotStatus.setEventType("state");
+
+        	    if(generalServiceI.getRobotStatusCount(getRobotStatus) > 0) {
+        	    	generalServiceI.updateRobotStatus(robotStatus);
+        	    }else {
+        	    	generalServiceI.insertRobotStatus(robotStatus);
+        	    }
+        	    
         		break;
             case "event":
 //                eventService.saveEvent(json);

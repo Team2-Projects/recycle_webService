@@ -10,4 +10,9 @@ public class RobotStatus {
     private double y;
     private double speed;
     private String state;
+    
+    private int robotId;
+    private String eventType;
+    private String status;
+
 }

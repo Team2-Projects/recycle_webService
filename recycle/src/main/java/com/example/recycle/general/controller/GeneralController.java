@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.recycle.dto.RobotStatus;
 import com.example.recycle.dto.UserDto;
 
 @Controller
@@ -42,5 +43,11 @@ public class GeneralController {
 
         generalService.join(userDto);
         return ResponseEntity.ok().build();
+    }
+    
+    @PostMapping("/robotStatus")
+    @ResponseBody
+    public RobotStatus getRobotStatus(@RequestBody RobotStatus robotStatus) throws Exception{
+    	return generalService.getRobotStatus(robotStatus);
     }
 }

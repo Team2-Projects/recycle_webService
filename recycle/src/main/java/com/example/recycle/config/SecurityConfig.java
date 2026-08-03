@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/login",
                                 "/robot",
+                                "/robot_command",
                                 "/pages/join.html",
                                 "/join"
                         ).permitAll()
