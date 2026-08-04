@@ -8,7 +8,7 @@ const ctx = canvas.getContext("2d");
 const socket = new SockJS("/ws");
 const stomp = Stomp.over(socket);
 
-let displayBattery = null;
+let todayCount
 
 document.addEventListener("DOMContentLoaded", () => {
 	getRobotState()
@@ -62,10 +62,8 @@ let getTodayCollectionCount = async () => {
         }
     }
     todayCountList = await apiFetch("/recycleHistory/getCollectionCount", "POST", data)
-
-    document.querySelector("#todayCount").innerHTML = todayCountList.collectionCount
-    document.querySelector("#todaySuccess").innerHTML = todayCountList.successCount
-    document.querySelector("#todayFail").innerHTML = todayCountList.failCount
+	todayCount = todayCountList.successCount
+    document.querySelector("#todaySuccess").innerHTML = todayCount
 }
 
 let getDefaultMap = async() => {
@@ -85,21 +83,13 @@ stomp.connect({}, function(){
 			let data = JSON.parse(message.body);
 			
 	        switch(data.type){
-	            case "battery":
-					let battery = data.battery
-					const alpha = 0.8;
-
-			        if(displayBattery === null){
-			            displayBattery = battery;
-			        } else {
-			            displayBattery =
-			                displayBattery * alpha +
-			                battery * (1 - alpha);
-			        }
-	                document.querySelector("#battery").innerHTML = Math.round(displayBattery) >= 100 ? 100 + " %" : Math.round(displayBattery) + " %";
-					if(displayBattery <= 30){
+	            case "battery":					
+					let battery = Math.round(data.battery)
+					
+	                document.querySelector("#battery").innerHTML = battery >= 100 ? 100 + " %" : battery + " %";
+					if(battery <= 30){
 						document.querySelector("#battery").style.color = "red"						
-					}else if(displayBattery <= 70){
+					}else if(battery <= 70){
 						document.querySelector("#battery").style.color = "yellow"
 					}else{
 						document.querySelector("#battery").style.color = "green"
@@ -133,6 +123,7 @@ stomp.connect({}, function(){
 				case "detection":
 					document.querySelector("#object").innerHTML = data.object_name;
 					document.querySelector("#confidence").innerHTML = data.confidence.toFixed(1) + " %";
+					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
 					break;
 				case "robot_task":
 					document.querySelector("#mission").innerHTML = data.message;

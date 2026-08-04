@@ -1,11 +1,16 @@
 let totalCountList
+let totalCount
 let todayCountList
+let todayCount
 
 let typeChartData
 let dateChartData
 
 let typeChart
 let dateChart
+
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
 
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#startDate").value = formatDate(new Date(), { months: -1 });
@@ -23,7 +28,8 @@ let getTodayCollectionCount = async () => {
         }
     }
     todayCountList = await apiFetch("/recycleHistory/getCollectionCount", "POST", data)
-    document.querySelector("#todayCount").innerHTML = todayCountList.collectionCount
+	todayCount = todayCountList.collectionCount
+    document.querySelector("#todayCount").innerHTML = todayCount
 }
 
 let getCollectionCount = async () => {
@@ -37,7 +43,8 @@ let getCollectionCount = async () => {
     }
 
     totalCountList = await apiFetch("/recycleHistory/getCollectionCount", "POST", data)
-    document.querySelector("#totalCount").innerHTML = totalCountList.collectionCount
+	totalCount = totalCountList.collectionCount
+    document.querySelector("#totalCount").innerHTML = totalCount
 
     typeChartData = await apiFetch("/recycleHistory/getTypeChartData", "POST", data)
     dateChartData = await apiFetch("/recycleHistory/getDateChartData", "POST", data)
@@ -98,6 +105,22 @@ let dataSetting = () => {
         dateChart.update();
     }
 }
+
+stomp.connect({}, function(){
+    stomp.subscribe(
+        "/topic/status",
+        function(message){
+			let data = JSON.parse(message.body);
+			
+	        switch(data.type){
+				case "detection":
+					document.querySelector("#totalCount").innerHTML = totalCount += 1;
+					document.querySelector("#todayCount").innerHTML = todayCount += 1;
+					break;
+	        }
+        }
+    );
+});
 
 Chart.register(ChartDataLabels);
 

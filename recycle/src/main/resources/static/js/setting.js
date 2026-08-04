@@ -27,26 +27,24 @@ stomp.connect({}, function(){
             try {
                 const data = JSON.parse(message.body);
 
-                if (data.type === "cpu") {
-                    const cpuUsage = data.cpu_usage.toFixed(1); 
+                if (data.type === "system") {
+                    const cpuUsage = data.cpu.toFixed(1); 
 					const cpuText = document.querySelector("#cpu_usage");
                     if (cpuText) cpuText.innerText = `${cpuUsage}%`;
-                    const progressBar = document.querySelector("#cpu_progress-bar");
-                    if (progressBar) progressBar.style.width = `${cpuUsage}%`;
-                }
-				if (data.type === "memory") {
-                    const memoryUsage = data.memory_usage.toFixed(1); 
+                    const cpuProgressBar = document.querySelector("#cpu_progress-bar");
+                    if (cpuProgressBar) cpuProgressBar.style.width = `${cpuUsage}%`;
+					
+					const memoryUsage = data.memory.toFixed(1); 
 					const memoryText = document.querySelector("#memory_usage");
-                    if (memoryText) memoryText.innerText = `${memoryUsage}%`;
-                    const progressBar = document.querySelector("#memory_progress-bar");
-                    if (progressBar) progressBar.style.width = `${memoryUsage}%`;
-				}
-				if (data.type === "disk") {
-                    const diskUsage = data.disk_usage.toFixed(1); 
+	                if (memoryText) memoryText.innerText = `${memoryUsage}%`;
+	                const memoryProgressBar = document.querySelector("#memory_progress-bar");
+	                if (memoryProgressBar) memoryProgressBar.style.width = `${memoryUsage}%`;
+					
+					const diskUsage = data.disk.toFixed(1); 
                     const diskText = document.querySelector("#disk_usage");
                     if (diskText) diskText.innerText = `${diskUsage}%`;
-                    const progressBar = document.querySelector("#disk_progress-bar");
-                    if (progressBar) progressBar.style.width = `${diskUsage}%`;
+                    const diskProgressBar = document.querySelector("#disk_progress-bar");
+                    if (diskProgressBar) diskProgressBar.style.width = `${diskUsage}%`;
                 }
 								
             } catch (e) {

@@ -83,10 +83,6 @@ public class RobotHandler extends AbstractWebSocketHandler {
         	    }
         	    
         		break;
-            case "event":
-//                eventService.saveEvent(json);
-                break;
-
             case "battery":
                 break;
 
@@ -97,12 +93,10 @@ public class RobotHandler extends AbstractWebSocketHandler {
             	String objectName = json.has("object_name") ? json.get("object_name").asText() : "";
                 String status = json.has("status") ? json.get("status").asText() : "Success";
                 
-                // 2. DTO 객체 생성 및 데이터 세팅
                 RecycleHistoryDto dto = new RecycleHistoryDto();
                 dto.setObjectType(objectName);
                 dto.setStatus(status);
                 
-                // 3. DB Insert 로직 실행
                 recycleHistoryServiceI.insertRecycleHistory(dto);
                 break;
         }
@@ -116,15 +110,12 @@ public class RobotHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleBinaryMessage(
             WebSocketSession session, BinaryMessage message) {
-
+    	
     	ByteBuffer buffer = message.getPayload();
-
         byte[] bytes = new byte[buffer.remaining()];
-
         buffer.get(bytes);
 
         latestFrame = bytes;
-        
         System.out.println(
                 "camera frame : " + latestFrame.length
         );
