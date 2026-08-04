@@ -12,7 +12,9 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.example.recycle.dto.EventLogDto;
 import com.example.recycle.dto.RobotStatus;
+import com.example.recycle.eventLog.service.EventLogServiceI;
 import com.example.recycle.general.service.GeneralServiceI;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,9 @@ public class RobotHandler extends AbstractWebSocketHandler {
     
     @Autowired
     private GeneralServiceI generalServiceI;
+    
+    @Autowired
+    private EventLogServiceI eventLogServiceI;
     
     
     private volatile byte[] latestFrame;
@@ -48,7 +53,15 @@ public class RobotHandler extends AbstractWebSocketHandler {
         JsonNode json = objectMapper.readTree(data);
 
         switch (json.get("type").asText()) {
-
+        	case "robot_task":
+        		EventLogDto eventLogDto = new EventLogDto();
+        		eventLogDto.setEventType(json.get("eventType").asText());
+        		eventLogDto.setMessage(json.get("message").asText());
+        		eventLogDto.setNote(json.get("note").asText());
+        		eventLogDto.setStatus(json.get("status").asText());
+        		
+        		eventLogServiceI.insertEventLog(eventLogDto);
+        		break;
         	case "robot_status":
         		RobotStatus robotStatus = new RobotStatus();
 

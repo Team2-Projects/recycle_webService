@@ -42,7 +42,14 @@
 
     <insert id="insertEventLog" parameterType="string">
         INSERT INTO EVENTLOG (robotId, eventType, message, note, status, createTime)
-        VALUES (${robotId}, ${eventType}, ${message}, ${note}, ${status}, SYSDATE())
+        VALUES (1,  #{eventType}, #{message}, #{note}, #{status}, SYSDATE())
     </insert>
+    
+    <select id="getLastTask" resultType="com.example.recycle.dto.EventLogDto">
+    	SELECT eventType, message, note, status
+		FROM EVENTLOG
+    	ORDER BY CREATETIME DESC 
+    	LIMIT 1 
+    </select>
 
 </mapper>

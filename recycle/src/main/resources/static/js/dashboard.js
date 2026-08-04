@@ -12,6 +12,7 @@ let displayBattery = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 	getRobotState()
+	getRobotTask()
     getTodayCollectionCount()
 	getDefaultMap()
 });
@@ -46,6 +47,11 @@ let getRobotState = async () => {
 		document.querySelector("#startBtn").classList.remove("inactive-btn");
 		document.querySelector("#stopBtn").classList.add("inactive-btn");
 	}
+}
+
+let getRobotTask = async () => {
+	let data = await apiFetch("/eventLog/getLastTask", "POST", {})
+	document.querySelector("#mission").innerHTML = data.message
 }
 
 let getTodayCollectionCount = async () => {
@@ -91,6 +97,14 @@ stomp.connect({}, function(){
 			                battery * (1 - alpha);
 			        }
 	                document.querySelector("#battery").innerHTML = Math.round(displayBattery) >= 100 ? 100 + " %" : Math.round(displayBattery) + " %";
+					if(displayBattery <= 30){
+						document.querySelector("#battery").style.color = "red"						
+					}else if(displayBattery <= 70){
+						document.querySelector("#battery").style.color = "yellow"
+					}else{
+						document.querySelector("#battery").style.color = "green"
+					}
+					
 	                break;
 				case "robot_status":
 					document.querySelector("#state").innerHTML = data.status
@@ -120,10 +134,11 @@ stomp.connect({}, function(){
 					document.querySelector("#object").innerHTML = data.object_name;
 					document.querySelector("#confidence").innerHTML = data.confidence.toFixed(1) + " %";
 					break;
+				case "robot_task":
+					document.querySelector("#mission").innerHTML = data.message;
 	        }
         }
     );
-
 });
 
 

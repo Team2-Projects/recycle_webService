@@ -14,7 +14,7 @@ let getEventLogList = async (page) => {
     pageNumber = page
     let eventType = document.querySelector("#eventType").value
     let startDate = document.querySelector("#startDate").value
-    let endDate = document.querySelector("#endDate").value
+    let endDate = document.querySelector("#endDate").value + " 23:59:59"
     let data = {
         eventType: eventType === "" ? null : eventType,
         searchDto: {
@@ -31,6 +31,13 @@ let getEventLogList = async (page) => {
     let table = document.querySelector("#eventTbody")
     table.innerHTML = ``
     let tbody = ""
+	if(eventLogList.length == 0){
+		tbody = `
+			<tr>
+				<td colspan="5">No Data</td>
+	        </tr>
+		`
+	}
     eventLogList.forEach(log => {
         let status = "success"
         if(log.status == 'Detect'){
@@ -124,6 +131,7 @@ let movePage = (page) => {
 
 
 //socket
+/*
 const socket = new SockJS("/ws");
 
 const stomp = Stomp.over(socket);
@@ -133,8 +141,14 @@ stomp.connect({}, function(){
 
     stomp.subscribe(
         "/topic/status",
-        function(message){
-            console.log(message.body);
+		function(message){
+			let data = JSON.parse(message.body);
+			
+	        switch(data.type){
+				case "robot_task":
+					getEventLogList(1);
+	        }
         }
     );
 });
+*/

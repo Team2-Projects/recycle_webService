@@ -21,4 +21,14 @@ public class EventLogService implements EventLogServiceI {
     public List<EventLogDto> getEventLogList(EventLogDto eventLogDto) throws Exception{
         return eventLogDao.getEventLogList(eventLogDto);
     }
+
+	@Override
+	public void insertEventLog(EventLogDto eventLogDto) throws Exception {
+		eventLogDao.insertEventLog(eventLogDto);
+	}
+
+	@Override
+	public EventLogDto getLastTask() throws Exception {
+		return eventLogDao.getLastTask();
+	}
 }

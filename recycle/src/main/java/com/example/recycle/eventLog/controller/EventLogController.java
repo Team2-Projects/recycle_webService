@@ -33,5 +33,11 @@ public class EventLogController {
     public List<EventLogDto> eventLogList(@RequestBody EventLogDto eventLogDto) throws Exception {
         return eventLogService.getEventLogList(eventLogDto);
     }
+    
+    @ResponseBody
+    @PostMapping("/eventLog/getLastTask")
+    public EventLogDto getLastTask() throws Exception{
+    	return eventLogService.getLastTask();
+    }
 
 }

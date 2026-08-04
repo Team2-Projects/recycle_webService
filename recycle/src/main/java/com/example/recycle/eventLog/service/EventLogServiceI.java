@@ -9,5 +9,9 @@ public interface EventLogServiceI {
     int getEventLogListCount(EventLogDto eventLogDto) throws Exception;
 
     List<EventLogDto> getEventLogList(EventLogDto eventLogDto) throws Exception;
+    
+    void insertEventLog(EventLogDto eventLogDto) throws Exception;
 
+	EventLogDto getLastTask() throws Exception;
+    
 }
