@@ -13,9 +13,11 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.example.recycle.dto.EventLogDto;
+import com.example.recycle.dto.RecycleHistoryDto;
 import com.example.recycle.dto.RobotStatus;
 import com.example.recycle.eventLog.service.EventLogServiceI;
 import com.example.recycle.general.service.GeneralServiceI;
+import com.example.recycle.recycleHistory.service.RecycleHistoryServiceI;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,6 +36,9 @@ public class RobotHandler extends AbstractWebSocketHandler {
     
     @Autowired
     private EventLogServiceI eventLogServiceI;
+    
+    @Autowired
+    private RecycleHistoryServiceI recycleHistoryServiceI;
     
     
     private volatile byte[] latestFrame;
@@ -89,6 +94,16 @@ public class RobotHandler extends AbstractWebSocketHandler {
                 break;
 
             case "detection":
+            	String objectName = json.has("object_name") ? json.get("object_name").asText() : "";
+                String status = json.has("status") ? json.get("status").asText() : "Success";
+                
+                // 2. DTO 객체 생성 및 데이터 세팅
+                RecycleHistoryDto dto = new RecycleHistoryDto();
+                dto.setObjectType(objectName);
+                dto.setStatus(status);
+                
+                // 3. DB Insert 로직 실행
+                recycleHistoryServiceI.insertRecycleHistory(dto);
                 break;
         }
 

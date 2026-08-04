@@ -26,4 +26,9 @@ public class RecycleHistoryService implements RecycleHistoryServiceI{
     public List<RecycleHistoryDto> getDateChartData(RecycleHistoryDto recycleHistoryDto) throws Exception {
         return recycleHistoryDao.getDateChartData(recycleHistoryDto);
     }
+    
+    @Override
+    public void insertRecycleHistory(RecycleHistoryDto recycleHistoryDto) throws Exception {
+        recycleHistoryDao.insertRecycleHistory(recycleHistoryDto);
+    }
 }

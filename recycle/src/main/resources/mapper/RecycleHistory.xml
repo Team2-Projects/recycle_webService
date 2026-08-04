@@ -61,5 +61,18 @@
         GROUP BY objectType
         ORDER BY objectType
     </select>
+    
+    <insert id="insertRecycleHistory" parameterType="com.example.recycle.dto.RecycleHistoryDto">
+        INSERT INTO RECYCLEHISTORY (
+            objectType,
+            status,
+            createTime
+            /* 필요시 confidence 등 다른 컬럼도 여기에 추가 */
+        ) VALUES (
+            #{objectType},
+            #{status},
+            NOW()
+        )
+    </insert>
 
 </mapper>

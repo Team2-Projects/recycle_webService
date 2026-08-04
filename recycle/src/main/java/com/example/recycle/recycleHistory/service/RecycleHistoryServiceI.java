@@ -10,4 +10,6 @@ public interface RecycleHistoryServiceI {
     List<RecycleHistoryDto> getTypeChartData(RecycleHistoryDto recycleHistoryDto) throws Exception;
 
     List<RecycleHistoryDto> getDateChartData(RecycleHistoryDto recycleHistoryDto) throws Exception;
+    
+    void insertRecycleHistory(RecycleHistoryDto recycleHistoryDto) throws Exception;
 }
