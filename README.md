@@ -79,6 +79,7 @@ com.recycle
 ## 화면
 ### 대시보드
 <img width="1919" height="943" alt="image" src="https://github.com/user-attachments/assets/cd133add-a156-4618-9c7e-fe0b3ff0302a" />
+
 #### 주요 기능
 - 실시간 배터리, 로봇 상태, 감지된 물체, 현재 진행중인 작업 표시
 - 카메라 영상 스트리밍
@@ -88,6 +89,7 @@ com.recycle
 
 ### 이벤트 로그
 <img width="1919" height="945" alt="image" src="https://github.com/user-attachments/assets/91c72691-7905-41dc-8d61-f7e485c36518" />
+
 #### 주요 기능
 - 로봇 작업 이력 조회
 - 이벤트 발생 시간 기록
@@ -95,6 +97,7 @@ com.recycle
 
 ### 쓰레기 수거 현황
 <img width="1919" height="944" alt="image" src="https://github.com/user-attachments/assets/12d6ef7d-e9f0-4905-9c28-e92aa3e3248b" />
+
 #### 주요 기능
 - 기간동안 수거한 전체 쓰레기 개수, 품목별 쓰레기 개수 표시
 - 오늘 수거한 쓰레기 개수, 품목별 쓰레기 개수 표시
@@ -102,6 +105,7 @@ com.recycle
 
 ### 설정/정보
 <img width="1919" height="945" alt="image" src="https://github.com/user-attachments/assets/0c7cb60d-53f1-419e-a6ff-a136bcc36ee1" />
+
 #### 주요 기능
 - 로봇 이름, 모델, 버전 확인
 - CPU, Disk, Memory 사용량 확인
