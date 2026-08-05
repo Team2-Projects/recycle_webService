@@ -104,7 +104,7 @@ com.recycle
 - Chart.js를 이용한 시각화
 
 ### 설정/정보
-<img width="1919" height="945" alt="image" src="https://github.com/user-attachments/assets/0c7cb60d-53f1-419e-a6ff-a136bcc36ee1" />
+<img width="1919" height="944" alt="image" src="https://github.com/user-attachments/assets/307b89c5-d6ad-43dd-a1c6-f83934bf82ed" />
 
 #### 주요 기능
 - 로봇 이름, 모델, 버전 확인
