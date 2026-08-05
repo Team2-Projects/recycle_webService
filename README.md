@@ -21,6 +21,7 @@ Database
 - MySQL 8.0
 
 ## Architecture
+```
 ROS2 Robot
       │
       ▼
@@ -31,6 +32,7 @@ Spring Boot
       │
       ├── MySQL
       └── Dashboard
+```
 - Ros2 Topic 데이터를 Ros Bridge Node에서 수집
 - WebSocket을 통해 Spring Boot 서버로 실시간 전달
 - Dashboard에서 로봇 상태 및 작업 현황 시각화
@@ -49,6 +51,7 @@ Spring Boot
 - 수거 데이터 통계 및 시각
 
 ## 프로젝트 구조
+```
 com.recycle
  ├── controller
  ├── service
@@ -57,7 +60,7 @@ com.recycle
    ├── RobotHandler
    ├── CommandHandler
  ├── config
- 
+```
 - MVC 패턴 기반으로 Controller, Service, Mapper 계층을 분리하여 구현
 - Controller는 요청 처리, Service는 비즈니스 로직, Mapper는 DB 접근 담당
 - WebSocket 패키지를 별도로 구성하여 실시간 로봇 데이터 통신 처리
