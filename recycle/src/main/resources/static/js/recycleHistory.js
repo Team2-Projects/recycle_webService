@@ -3,14 +3,15 @@ let totalCount
 let todayCountList
 let todayCount
 
+let dateChartDataToday
 let typeChartData
 let dateChartData
 
 let typeChart
 let dateChart
 
-const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);
+/*const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);*/
 
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#startDate").value = formatDate(new Date(), { months: -1 });
@@ -30,6 +31,11 @@ let getTodayCollectionCount = async () => {
     todayCountList = await apiFetch("/recycleHistory/getCollectionCount", "POST", data)
 	todayCount = todayCountList.collectionCount
     document.querySelector("#todayCount").innerHTML = todayCount
+	
+	dateChartDataToday = await apiFetch("/recycleHistory/getDateChartData", "POST", data)
+	dateChartDataToday[0].recycleList.forEach(d => {
+		document.querySelector(`#${d.objectType}TodayCount`).innerHTML = `${d.collectionCount}`
+	})
 }
 
 let getCollectionCount = async () => {
@@ -60,6 +66,7 @@ let dataSetting = () => {
     typeChartData.forEach(d => {
         typeChartLabel.push(d.objectType)
         typeChartCount.push(d.collectionCount)
+		document.querySelector(`#${d.objectType}TotalCount`).innerHTML = `${d.collectionCount}`
     })
 
     const dateMap = new Map();
@@ -106,7 +113,7 @@ let dataSetting = () => {
     }
 }
 
-stomp.connect({}, function(){
+/*stomp.connect({}, function(){
     stomp.subscribe(
         "/topic/status",
         function(message){
@@ -120,7 +127,7 @@ stomp.connect({}, function(){
 	        }
         }
     );
-});
+});*/
 
 Chart.register(ChartDataLabels);
 

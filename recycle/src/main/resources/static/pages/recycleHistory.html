@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="container">
-      	<div class="content">
+      	<div class="content" style="min-width:1370px;">
       		<h2 class="header">Recycle Monitoring</h2>
             <nav class="tab-menu">
                 <a href="/dashboard" class="tab">대시보드</a>
@@ -29,21 +29,84 @@
                 </div>
 
                 <!-- Summary -->
-                <div class="dflex mb20 pb20" style="border-bottom: 1px solid #ddd">
-                    <div>
-                        <h3 class="mb20">📦 Summary</h3>
-                        <div class="dflex">
-                            <div class="card summary-card mr20">
+                <div class="dflex mb20 pb20" style="border-bottom: 1px solid #ddd;">
+                	<div class="dflex card w19p">
+	                    <h3 class="dflex mr20" style="margin-bottom:0px">Summary</h3>
+	                    <div class="dflex w60p">
+	                        <div class="dflex summary-card mw150 w100p">
 		                    	<div class="dflex">
-		                    		<div>Total Collection</div>
+		                    		<div class="mr10">Total</div>
 		                        	<strong id="totalCount">-</strong>
 		                    	</div>
+		                    	<div>|</div>
 		                        <div class="dflex">
-		                        	<div>Today Collection</div>
+		                        	<div class="mr10">Today</div>
 		                        	<strong id="todayCount">-</strong>
 		                       	</div>
 		                    </div>
-                        </div>
+	                    </div>
+                    </div>
+                    <div class="dflex card w36p">
+	                    <h3 class="dflex mr20" style="margin-bottom:0px">Total</h3>
+	                    <div class="dflex w90p">
+	                        <div class="dflex summary-card w100p">
+		                    	<div class="dflex">
+		                    		<div class="mr10">Plastic</div>
+		                        	<strong id="PlasticTotalCount">-</strong>
+		                    	</div>
+		                    	<div>|</div>
+		                        <div class="dflex">
+		                        	<div class="mr10">Can</div>
+		                        	<strong id="CanTotalCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">Paper</div>
+		                        	<strong id="PaperTotalCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">Glass</div>
+		                        	<strong id="GlassTotalCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">General</div>
+		                        	<strong id="GeneralTotalCount">-</strong>
+		                       	</div>
+		                    </div>
+	                    </div>
+                    </div>
+                    <div class="dflex card w36p">
+	                    <h3 class="dflex mr10" style="margin-bottom:0px">Today</h3>
+	                    <div class="dflex w90p">
+	                        <div class="dflex summary-card w100p">
+		                    	<div class="dflex">
+		                    		<div class="mr10">Plastic</div>
+		                        	<strong id="PlasticTodayCount">-</strong>
+		                    	</div>
+		                    	<div>|</div>
+		                        <div class="dflex">
+		                        	<div class="mr10">Can</div>
+		                        	<strong id="CanTodayCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">Paper</div>
+		                        	<strong id="PaperTodayCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">Glass</div>
+		                        	<strong id="GlassTodayCount">-</strong>
+		                       	</div>
+		                       	<div>|</div>
+		                       	<div class="dflex">
+		                        	<div class="mr10">General</div>
+		                        	<strong id="GeneralTodayCount">-</strong>
+		                       	</div>
+		                    </div>
+	                    </div>
                     </div>
                 </div>
 
