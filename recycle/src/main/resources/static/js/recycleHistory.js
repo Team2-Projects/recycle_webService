@@ -34,7 +34,7 @@ let getTodayCollectionCount = async () => {
 	
 	dateChartDataToday = await apiFetch("/recycleHistory/getDateChartData", "POST", data)
 	dateChartDataToday[0].recycleList.forEach(d => {
-		document.querySelector(`#${d.objectType}TodayCount`).innerHTML = `${d.collectionCount}`
+		document.querySelector(`#${d.objectType.toLowerCase()}TodayCount`).innerHTML = `${d.collectionCount}`
 	})
 }
 
@@ -66,7 +66,7 @@ let dataSetting = () => {
     typeChartData.forEach(d => {
         typeChartLabel.push(d.objectType)
         typeChartCount.push(d.collectionCount)
-		document.querySelector(`#${d.objectType}TotalCount`).innerHTML = `${d.collectionCount}`
+		document.querySelector(`#${d.objectType.toLowerCase()}TotalCount`).innerHTML = `${d.collectionCount}`
     })
 
     const dateMap = new Map();
