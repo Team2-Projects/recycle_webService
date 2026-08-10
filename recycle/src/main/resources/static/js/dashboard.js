@@ -122,11 +122,17 @@ stomp.connect({}, function(){
 	                break;
 				case "detection":
 					document.querySelector("#object").innerHTML = data.object_name;
-					document.querySelector("#confidence").innerHTML = Number(data.confidence).toFixed(1) + " %";
-					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
+					document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
 					break;
 				case "robot_task":
 					document.querySelector("#mission").innerHTML = data.message;
+					break;
+				case "recycleHistory":
+					console.log(data)
+					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
+					document.querySelector("#object").innerHTML = "-";
+					document.querySelector("#confidence").innerHTML = "- %";
+					break;
 	        }
         }
     );

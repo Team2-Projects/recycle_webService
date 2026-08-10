@@ -89,7 +89,7 @@ public class RobotHandler extends AbstractWebSocketHandler {
             case "robot_pose":
                 break;
 
-            case "detection":
+            case "recycleHistory":
             	String objectName = json.has("object_name") ? json.get("object_name").asText() : "";
                 String status = json.has("status") ? json.get("status").asText() : "Success";
                 
