@@ -122,7 +122,7 @@ stomp.connect({}, function(){
 	                break;
 				case "detection":
 					document.querySelector("#object").innerHTML = data.object_name;
-					document.querySelector("#confidence").innerHTML = data.confidence.toFixed(1) + " %";
+					document.querySelector("#confidence").innerHTML = Number(data.confidence).toFixed(1) + " %";
 					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
 					break;
 				case "robot_task":
