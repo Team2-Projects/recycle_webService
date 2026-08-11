@@ -90,7 +90,7 @@ stomp.connect({}, function(){
 					if(battery <= 30){
 						document.querySelector("#battery").style.color = "red"						
 					}else if(battery <= 70){
-						document.querySelector("#battery").style.color = "yellow"
+						document.querySelector("#battery").style.color = "orange"
 					}else{
 						document.querySelector("#battery").style.color = "green"
 					}
