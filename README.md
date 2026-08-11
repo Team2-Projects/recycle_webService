@@ -91,9 +91,8 @@ com.recycle
 <img width="1919" height="945" alt="image" src="https://github.com/user-attachments/assets/91c72691-7905-41dc-8d61-f7e485c36518" />
 
 #### 주요 기능
-- 로봇 작업 이력 조회
+- 로봇 작업 (순찰시작, 순찰종료, 순찰재개, 물체감지, 수거시작, 수거성공, 수거실패, 사용자명령, 배터리경고) 이력 조회
 - 이벤트 발생 시간 기록
-- 순찰 시작, 순찰 종료, 객체 감지, 수거 성공, 사용자 명령 로그 확인
 
 ### 쓰레기 수거 현황
 <img width="1919" height="944" alt="image" src="https://github.com/user-attachments/assets/12d6ef7d-e9f0-4905-9c28-e92aa3e3248b" />
