@@ -128,7 +128,6 @@ stomp.connect({}, function(){
 					document.querySelector("#mission").innerHTML = data.message;
 					break;
 				case "recycleHistory":
-					console.log(data)
 					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
 					document.querySelector("#object").innerHTML = "-";
 					document.querySelector("#confidence").innerHTML = "- %";
