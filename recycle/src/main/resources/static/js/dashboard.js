@@ -10,6 +10,10 @@ const stomp = Stomp.over(socket);
 
 let todayCount
 
+let robotPosition = null;
+let navigationPath = [];
+let destination = null;
+
 document.addEventListener("DOMContentLoaded", () => {
 	getRobotState()
 	getRobotTask()
@@ -70,10 +74,14 @@ let getDefaultMap = async() => {
 	let data = {}
 	defaultMap= await apiFetch("/map/getDefaultMap", "POST", data)
 	
-	document.querySelector("#mapImg").src = defaultMap.imagePath;
+	img.src = defaultMap.imagePath;
+	
+	img.onload = () => {
+        canvas.width = img.clientWidth;
+        canvas.height = img.clientHeight;
 
-	canvas.width = img.width;
-    canvas.height = img.height;	   
+        drawMap();
+    };	   
 }
 
 stomp.connect({}, function(){
@@ -112,14 +120,33 @@ stomp.connect({}, function(){
 					const mapX = (data.x - defaultMap.originX) / defaultMap.resolution;
 					const mapY = defaultMap.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
 
-					const scaleX = mapImg.clientWidth / defaultMap.width;
-					const scaleY = mapImg.clientHeight / defaultMap.height;
+					const scaleX = img.clientWidth / defaultMap.width;
+					const scaleY = img.clientHeight / defaultMap.height;
 
 					const canvasX = mapX * scaleX;
 					const canvasY = mapY * scaleY;
 
-					drawRobot(canvasX, canvasY);
+					robotPosition = {x: canvasX, y: canvasY};
+					drawMap();
 	                break;
+				case "navigation_path":
+				    navigationPath = data.path;
+				    drawMap();
+				    break;
+				case "navigation_goal":
+				    const goalMapX = (data.x - defaultMap.originX) / defaultMap.resolution;
+				    const goalMapY = defaultMap.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
+
+				    const goalScaleX = img.clientWidth / defaultMap.width;
+				    const goalScaleY = img.clientHeight / defaultMap.height;
+
+				    destination = {
+				        x: goalMapX * goalScaleX,
+				        y: goalMapY * goalScaleY
+				    };
+
+				    drawMap();
+				    break;
 				case "detection":
 					document.querySelector("#object").innerHTML = data.object_name;
 					document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
@@ -138,10 +165,70 @@ stomp.connect({}, function(){
 });
 
 
-let drawRobot = (x, y) => {
+let drawMap = () => {	
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawNavigationPath();
+    drawDestination();
+    drawRobot();
+}
+
+let drawRobot = () => {
+	if(!robotPosition)
+        return;
+
     ctx.beginPath();
-    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.arc(robotPosition.x, robotPosition.y, 6, 0, Math.PI * 2);
     ctx.fillStyle = "red";
     ctx.fill();
+}
+
+let drawNavigationPath = () => {
+	if (!navigationPath || navigationPath.length < 2)
+        return;
+
+    const scaleX = img.clientWidth / defaultMap.width;
+    const scaleY = img.clientHeight / defaultMap.height;
+
+    ctx.beginPath();
+
+    navigationPath.forEach((pose, index) => {
+        const mapX = (pose.x - defaultMap.originX) / defaultMap.resolution;
+        const mapY = defaultMap.height - ((pose.y - defaultMap.originY) / defaultMap.resolution);
+
+        const canvasX = mapX * scaleX;
+        const canvasY = mapY * scaleY;
+
+        if (index === 0) {
+            ctx.moveTo(canvasX, canvasY);
+        } else {
+            ctx.lineTo(canvasX, canvasY);
+        }
+    });
+
+    ctx.strokeStyle = "#2196F3";
+    ctx.lineWidth = 3;
+
+    ctx.stroke();
+}
+
+let drawDestination = () => {
+	if(!destination)
+        return;
+
+    ctx.beginPath();
+
+    ctx.arc(destination.x, destination.y, 8, 0, Math.PI * 2);
+
+    ctx.fillStyle = "green";
+
+    ctx.fill();
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "green";
+
+    ctx.fillText(
+        "Goal",
+        destination.x + 10,
+        destination.y - 10
+    );
 }
