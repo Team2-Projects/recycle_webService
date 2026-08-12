@@ -11,14 +11,17 @@ const stomp = Stomp.over(socket);
 let todayCount
 
 let robotPosition = null;
+let robotMapPosition = null;
+let navigationPastPath = [];
 let navigationPath = [];
+let startPosition = null;
 let destination = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-	getRobotState()
+document.addEventListener("DOMContentLoaded", async () => {
 	getRobotTask()
     getTodayCollectionCount()
-	getDefaultMap()
+	await getDefaultMap()
+	await getRobotState()
 });
 
 document.querySelector("#startBtn").addEventListener("click", () => {
@@ -46,11 +49,30 @@ let getRobotState = async () => {
 		document.querySelector("#state").style.color = "#4CAF50";
 		document.querySelector("#startBtn").classList.add("inactive-btn");
 		document.querySelector("#stopBtn").classList.remove("inactive-btn");
+		if (data.startDestinationX != null && data.startDestinationY != null) {
+	        startPosition = convertMapToCanvas(
+	            data.startDestinationX,
+	            data.startDestinationY
+	        );
+	    }
+
+	    if (data.goalDestinationX != null && data.goalDestinationY != null) {
+	        destination = convertMapToCanvas(
+	            data.goalDestinationX,
+	            data.goalDestinationY
+	        );
+	    }
 	}else{
 		document.querySelector("#state").style.color = "red"
 		document.querySelector("#startBtn").classList.remove("inactive-btn");
 		document.querySelector("#stopBtn").classList.add("inactive-btn");
+		navigationPastPath = [];
+	    navigationPath = [];
+	    startPosition = null;
+	    destination = null;
 	}
+
+    drawMap();
 }
 
 let getRobotTask = async () => {
@@ -84,6 +106,19 @@ let getDefaultMap = async() => {
     };	   
 }
 
+let convertMapToCanvas = (x, y) => {
+	const mapX = (x - defaultMap.originX) / defaultMap.resolution;
+	const mapY = defaultMap.height - ((y - defaultMap.originY) / defaultMap.resolution);
+
+	const scaleX = img.clientWidth / defaultMap.width;
+	const scaleY = img.clientHeight / defaultMap.height;
+	
+	return {
+		x: mapX * scaleX,
+		y: mapY * scaleY
+	}
+}
+
 stomp.connect({}, function(){
     stomp.subscribe(
         "/topic/status",
@@ -114,19 +149,20 @@ stomp.connect({}, function(){
 						document.querySelector("#state").style.color = "red"
 						document.querySelector("#startBtn").classList.remove("inactive-btn");
 						document.querySelector("#stopBtn").classList.add("inactive-btn");
+						
+						navigationPastPath = [];
+				        navigationPath = [];
+				        startPosition = null;
+				        destination = null;
+
+				        drawMap();
 					}
 					break;
 	            case "robot_pose":					
-					const mapX = (data.x - defaultMap.originX) / defaultMap.resolution;
-					const mapY = defaultMap.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
-
-					const scaleX = img.clientWidth / defaultMap.width;
-					const scaleY = img.clientHeight / defaultMap.height;
-
-					const canvasX = mapX * scaleX;
-					const canvasY = mapY * scaleY;
-
-					robotPosition = {x: canvasX, y: canvasY};
+					robotMapPosition = {x: data.x, y: data.y};
+					robotPosition = convertMapToCanvas(data.x, data.y);					
+					addPastPath(robotPosition.x, robotPosition.y)
+					
 					drawMap();
 	                break;
 				case "navigation_path":
@@ -134,16 +170,25 @@ stomp.connect({}, function(){
 				    drawMap();
 				    break;
 				case "navigation_goal":
-				    const goalMapX = (data.x - defaultMap.originX) / defaultMap.resolution;
-				    const goalMapY = defaultMap.height - ((data.y - defaultMap.originY) / defaultMap.resolution);
+					navigationPastPath = [];
+					if(robotPosition){
+						startPosition = {
+							x: robotPosition.x,
+							y: robotPosition.y
+						}
+					}
 
-				    const goalScaleX = img.clientWidth / defaultMap.width;
-				    const goalScaleY = img.clientHeight / defaultMap.height;
-
-				    destination = {
-				        x: goalMapX * goalScaleX,
-				        y: goalMapY * goalScaleY
-				    };
+				    destination = convertMapToCanvas(data.x, data.y);
+					
+					if(robotMapPosition){
+						apiFetch("/robotStatus/updateDestination", "POST", {
+							eventType: "state",
+			                startDestinationX: robotMapPosition.x,
+			                startDestinationY: robotMapPosition.y,
+			                goalDestinationX: data.x,
+			                goalDestinationY: data.y
+						})
+					}
 
 				    drawMap();
 				    break;
@@ -167,9 +212,74 @@ stomp.connect({}, function(){
 
 let drawMap = () => {	
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawNavigationPath();
+	// 지나온 길
+    drawPastPath();
+    // 앞으로 갈 길
+    drawNavigationPath();
+    // 출발지
+    drawStartPosition();
+    // 목적지
     drawDestination();
+    // 현재 로봇은 제일 마지막
     drawRobot();
+}
+
+let drawStartPosition = () => {
+	if (!startPosition)
+        return;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        startPosition.x, startPosition.y, 6, 0, Math.PI * 2
+    );
+
+    ctx.fillStyle = "#4CAF50";
+    ctx.fill();
+
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#4CAF50";
+
+    ctx.fillText(
+        "Start",
+        startPosition.x + 9,
+        startPosition.y - 8
+    );
+}
+
+let addPastPath = (x, y) => {
+	if(navigationPastPath.length == 0){
+		navigationPastPath.push({x, y})
+		return
+	}
+	
+	const last = navigationPastPath[navigationPastPath.length - 1]
+	const dx = x - last.x;
+    const dy = y - last.y;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance >= 3) {
+        navigationPastPath.push({ x, y });
+    }
+}
+
+let drawPastPath = () => {
+	if (navigationPastPath.length < 2)
+        return;
+
+    ctx.beginPath();
+
+    ctx.moveTo(navigationPastPath[0].x, navigationPastPath[0].y); 
+
+    for (let i = 1; i < navigationPastPath.length; i++) {
+        ctx.lineTo(navigationPastPath[i].x, navigationPastPath[i].y);
+    }
+
+    ctx.strokeStyle = "#9E9E9E";
+    ctx.lineWidth = 2;
+
+    ctx.stroke();
 }
 
 let drawRobot = () => {

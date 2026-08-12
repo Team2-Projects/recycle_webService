@@ -6,7 +6,7 @@
 <mapper namespace="com.example.recycle.dao.GeneralDao">
 
 	<select id="getRobotStatus" parameterType="com.example.recycle.dto.RobotStatus" resultType="com.example.recycle.dto.RobotStatus">
-		SELECT eventType, status
+		SELECT eventType, status, startDestinationX, startDestinationY, goalDestinationX, goalDestinationY
 		FROM ROBOTSTATUS
 		WHERE eventType=#{eventType}
 	</select>
@@ -25,7 +25,29 @@
     
     <update id="updateRobotStatus" parameterType="com.example.recycle.dto.RobotStatus">
     	UPDATE ROBOTSTATUS
-		SET status=#{status}, updateTime=SYSDATE()
+		<set>
+	        <if test="status != null">
+	            status = #{status},
+	        </if>
+	
+	        <if test="startDestinationX != null">
+	            startDestinationX = #{startDestinationX},
+	        </if>
+	
+	        <if test="startDestinationY != null">
+	            startDestinationY = #{startDestinationY},
+	        </if>
+	
+	        <if test="goalDestinationX != null">
+	            goalDestinationX = #{goalDestinationX},
+	        </if>
+	
+	        <if test="goalDestinationY != null">
+	            goalDestinationY = #{goalDestinationY},
+	        </if>
+	
+	        updateTime = SYSDATE()
+	    </set>
 		WHERE eventType=#{eventType} AND robotId = 1
     </update>
 

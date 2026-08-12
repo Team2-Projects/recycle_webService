@@ -1,6 +1,8 @@
 package com.example.recycle.general.controller;
 
 import com.example.recycle.general.service.GeneralService;
+import com.example.recycle.general.service.GeneralServiceI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +18,7 @@ public class GeneralController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private GeneralService generalService;
+    private GeneralServiceI generalService;
 
 	// 로그인 페이지
     @GetMapping("/login")
@@ -49,5 +51,11 @@ public class GeneralController {
     @ResponseBody
     public RobotStatus getRobotStatus(@RequestBody RobotStatus robotStatus) throws Exception{
     	return generalService.getRobotStatus(robotStatus);
+    }
+    
+    @PostMapping("/robotStatus/updateDestination")
+    @ResponseBody
+    public void updateDestination(@RequestBody RobotStatus robotStatus) throws Exception{
+    	generalService.updateRobotStatus(robotStatus);
     }
 }
