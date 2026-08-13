@@ -8,13 +8,14 @@ const ctx = canvas.getContext("2d");
 const socket = new SockJS("/ws");
 const stomp = Stomp.over(socket);
 
+const robotImg = new Image();
+robotImg.src = "/image/robot3.png";
+
 let todayCount
 
 let robotPosition = null;
 let robotMapPosition = null;
-let navigationPastPath = [];
 let navigationPath = [];
-let startPosition = null;
 let destination = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -49,12 +50,6 @@ let getRobotState = async () => {
 		document.querySelector("#state").style.color = "#4CAF50";
 		document.querySelector("#startBtn").classList.add("inactive-btn");
 		document.querySelector("#stopBtn").classList.remove("inactive-btn");
-		if (data.startDestinationX != null && data.startDestinationY != null) {
-	        startPosition = convertMapToCanvas(
-	            data.startDestinationX,
-	            data.startDestinationY
-	        );
-	    }
 
 	    if (data.goalDestinationX != null && data.goalDestinationY != null) {
 	        destination = convertMapToCanvas(
@@ -66,9 +61,7 @@ let getRobotState = async () => {
 		document.querySelector("#state").style.color = "red"
 		document.querySelector("#startBtn").classList.remove("inactive-btn");
 		document.querySelector("#stopBtn").classList.add("inactive-btn");
-		navigationPastPath = [];
 	    navigationPath = [];
-	    startPosition = null;
 	    destination = null;
 	}
 
@@ -98,12 +91,24 @@ let getDefaultMap = async() => {
 	
 	img.src = defaultMap.imagePath;
 	
-	img.onload = () => {
-        canvas.width = img.clientWidth;
-        canvas.height = img.clientHeight;
+	await new Promise((resolve, reject) => {
+        img.onload = () => {
+            canvas.width = img.clientWidth;
+            canvas.height = img.clientHeight;
 
-        drawMap();
-    };	   
+            // 확인용 로봇 위치
+            robotPosition = {
+                x: canvas.width / 3,
+                y: canvas.height / 2
+            };
+
+            drawMap();
+
+            resolve();
+        };
+
+        img.onerror = reject;
+    });  
 }
 
 let convertMapToCanvas = (x, y) => {
@@ -150,18 +155,15 @@ stomp.connect({}, function(){
 						document.querySelector("#startBtn").classList.remove("inactive-btn");
 						document.querySelector("#stopBtn").classList.add("inactive-btn");
 						
-						navigationPastPath = [];
 				        navigationPath = [];
-				        startPosition = null;
 				        destination = null;
 
 				        drawMap();
 					}
 					break;
 	            case "robot_pose":					
-					robotMapPosition = {x: data.x, y: data.y};
-					robotPosition = convertMapToCanvas(data.x, data.y);					
-					addPastPath(robotPosition.x, robotPosition.y)
+					robotMapPosition = {x: data.x, y: data.y, yaw: data.yaw};
+					robotPosition = convertMapToCanvas(data.x, data.y);		
 					
 					drawMap();
 	                break;
@@ -170,14 +172,6 @@ stomp.connect({}, function(){
 				    drawMap();
 				    break;
 				case "navigation_goal":
-					navigationPastPath = [];
-					if(robotPosition){
-						startPosition = {
-							x: robotPosition.x,
-							y: robotPosition.y
-						}
-					}
-
 				    destination = convertMapToCanvas(data.x, data.y);
 					
 					if(robotMapPosition){
@@ -209,87 +203,116 @@ stomp.connect({}, function(){
     );
 });
 
+const areaLabels = ["플라스틱", "캔", "종이", "유리", "일반쓰레기"];
+
+let getCurrentAreaIndex = () => {
+    if (!robotPosition) return -1;
+
+    const areaLeft = 10;
+    const areaWidth = 90;
+    const areaTop = 10;
+    const areaHeight = canvas.height - 20;
+
+    // ★ 로봇이 왼쪽 구역 표시 영역 밖이면 아무 구역도 선택하지 않음
+    if (
+        robotPosition.x < areaLeft ||
+        robotPosition.x > areaLeft + areaWidth ||
+        robotPosition.y < areaTop ||
+        robotPosition.y > areaTop + areaHeight
+    ) {
+        return -1;
+    }
+
+    const sectionHeight = areaHeight / 5;
+
+    return Math.floor(
+        (robotPosition.y - areaTop) / sectionHeight
+    );
+}
+
+let drawAreaLabels = () => {
+    const sectionHeight = canvas.height / 5;
+    const labelX = 20;
+    const currentAreaIndex = getCurrentAreaIndex();
+
+    for (let i = 0; i < 5; i++) {
+        const y = i * sectionHeight;
+
+        // 구역 경계선
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(80, y);
+        ctx.strokeStyle = "#CCCCCC";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 현재 로봇이 있는 구역 강조
+        if (i === currentAreaIndex) {
+            ctx.fillStyle = "rgba(76, 175, 80, 0.18)";
+            ctx.fillRect(0, y, 80, sectionHeight);
+
+            ctx.fillStyle = "#2E7D32";
+            ctx.font = "bold 16px Arial";
+        } else {
+            ctx.fillStyle = "#666";
+            ctx.font = "14px Arial";
+        }
+
+        // 글자
+        ctx.fillText(
+            areaLabels[i],
+            labelX,
+            y + sectionHeight / 2
+        );
+    }
+
+    // 마지막 아래 경계선
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+    ctx.lineTo(80, canvas.height);
+    ctx.strokeStyle = "#CCCCCC";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+}
+
 
 let drawMap = () => {	
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-	// 지나온 길
-    drawPastPath();
+	drawAreaLabels();
+	
     // 앞으로 갈 길
     drawNavigationPath();
-    // 출발지
-    drawStartPosition();
     // 목적지
     drawDestination();
     // 현재 로봇은 제일 마지막
     drawRobot();
 }
 
-let drawStartPosition = () => {
-	if (!startPosition)
-        return;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        startPosition.x, startPosition.y, 6, 0, Math.PI * 2
-    );
-
-    ctx.fillStyle = "#4CAF50";
-    ctx.fill();
-
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "#4CAF50";
-
-    ctx.fillText(
-        "Start",
-        startPosition.x + 9,
-        startPosition.y - 8
-    );
-}
-
-let addPastPath = (x, y) => {
-	if(navigationPastPath.length == 0){
-		navigationPastPath.push({x, y})
-		return
-	}
-	
-	const last = navigationPastPath[navigationPastPath.length - 1]
-	const dx = x - last.x;
-    const dy = y - last.y;
-
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance >= 3) {
-        navigationPastPath.push({ x, y });
-    }
-}
-
-let drawPastPath = () => {
-	if (navigationPastPath.length < 2)
-        return;
-
-    ctx.beginPath();
-
-    ctx.moveTo(navigationPastPath[0].x, navigationPastPath[0].y); 
-
-    for (let i = 1; i < navigationPastPath.length; i++) {
-        ctx.lineTo(navigationPastPath[i].x, navigationPastPath[i].y);
-    }
-
-    ctx.strokeStyle = "#9E9E9E";
-    ctx.lineWidth = 2;
-
-    ctx.stroke();
-}
-
 let drawRobot = () => {
-	if(!robotPosition)
+	if (!robotPosition)
         return;
 
-    ctx.beginPath();
-    ctx.arc(robotPosition.x, robotPosition.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = "red";
-    ctx.fill();
+	if (!robotImg.complete || robotImg.naturalWidth === 0)
+        return;
+
+    const robotWidth = 50
+	const robotHeight = 50
+	
+	ctx.save();
+
+    ctx.translate(
+        robotPosition.x, robotPosition.y
+    );
+
+    ctx.drawImage(
+        robotImg,
+        -robotWidth / 2,
+        -robotHeight / 2,
+        robotWidth,
+        robotHeight
+    );
+
+    ctx.restore();
 }
 
 let drawNavigationPath = () => {
