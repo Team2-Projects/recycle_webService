@@ -78,7 +78,7 @@ com.recycle
 
 ## 화면
 ### 대시보드
-<img width="1919" height="943" alt="image" src="https://github.com/user-attachments/assets/cd133add-a156-4618-9c7e-fe0b3ff0302a" />
+<img width="1919" height="945" alt="image" src="https://github.com/user-attachments/assets/bf106716-eb84-4db0-89a9-c31d00550d21" />
 
 #### 주요 기능
 - 실시간 배터리, 로봇 상태, 감지된 물체, 현재 진행중인 작업 표시
