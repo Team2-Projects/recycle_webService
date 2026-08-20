@@ -599,7 +599,7 @@
 .date_list {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
 }
 
@@ -652,6 +652,15 @@
   gap: 10px;
   overflow-y: auto;
   height: calc(100vh - 640px);
+}
+
+.schedule_item_no_data {
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+  cursor: default;
 }
 
 .schedule_item {
@@ -753,6 +762,10 @@
   padding: 0 16px;
   overflow: auto;
   height: 170px;
+}
+
+.voice_box_no_data_item{
+	justify-content: center !important;
 }
 
 .voice_item {

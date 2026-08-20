@@ -20,59 +20,31 @@
 	            <div class="schedule_list_card schedule_card">
 	                <div class="card_top">
 	                    <div class="card_title">수거 스케줄 목록</div>
-	                    <button type="button" class="btn btn_blue">
+	                    <button type="button" class="btn btn_blue" id="scheduleAdd">
 	                        + 스케줄 추가
 	                    </button>
 	                </div>
 
 	                <div class="date_slider">
-	                    <button type="button" class="date_arrow">
+	                    <button type="button" class="date_arrow" id="prevWeekBtn">
 	                        &lt;
 	                    </button>
 	
-	                    <div class="date_list">
-	                    	<button type="button" class="date_item">
-	                            <span class="day_name">일</span>
-	                            <span class="day_num">23</span>
-	                        </button>
-	                        
-	                        <button type="button" class="date_item">
-	                            <span class="day_name">월</span>
-	                            <span class="day_num">17</span>
-	                        </button>
+	                    <div class="date_list" id="dateList"></div>
 	
-	                        <button type="button" class="date_item">
-	                            <span class="day_name">화</span>
-	                            <span class="day_num">18</span>
-	                        </button>
-	
-	                        <button type="button" class="date_item">
-	                            <span class="day_name">수</span>
-	                            <span class="day_num">19</span>
-	                        </button>
-	
-	                        <button type="button" class="date_item">
-	                            <span class="day_name">목</span>
-	                            <span class="day_num">20</span>
-	                        </button>
-	
-	                        <button type="button" class="date_item active">
-	                            <span class="day_name">금</span>
-	                            <span class="day_num">21</span>
-<!-- 	                        </button> -->
-	
-	                        <button type="button" class="date_item">
-	                            <span class="day_name">토</span>
-	                            <span class="day_num">22</span>
-	                        </button>
-	                    </div>
-	
-	                    <button type="button" class="date_arrow">
+	                    <button type="button" class="date_arrow" id="nextWeekBtn">
 	                        &gt;
 	                    </button>
 	                </div>
 	
-					<div class="schedule_list">
+					<div class="schedule_list" id="schedule_list">
+						<button type="button" class="schedule_item_no_data">
+	                        <div class="schedule_item_row">
+	                            <div class="schedule_name">
+	                                No Data
+	                            </div>
+	                        </div>
+	                    </button>
 	                    <button type="button" class="schedule_item active">
 	                        <div class="schedule_item_row">
 	                            <div class="schedule_time">
@@ -110,7 +82,14 @@
 	                        </div>
 	                    </div>
 	
-	                    <div class="voice_list">
+	                    <div class="voice_list" id="voice_list">
+	                    	<div class="voice_item voice_box_no_data_item">
+	                            <div>
+	                                No Data
+	                            </div>
+	                        </div>
+	                    
+	                    
 	                        <div class="voice_item">
 	                            <div class="voice_text">
 	                                "오전 9시에 수거 시작 등록해줘"
@@ -151,18 +130,18 @@
 	            </div>
 
 	            <div class="schedule_detail_card schedule_card">
-	                <div class="card_top">
+	                <div class="card_top" style="height: 42px">
 	                    <div>
 	                        <div class="detail_title">
 	                            스케줄 상세
 	                        </div>
 	                    </div>
 						
-						<div>
-							<button type="button" class="btn btn_red">삭제</button>
-		                    <button type="button" class="btn btn_blue">수정</button>
-		                    <button type="button" class="btn btn_white">취소</button>
-	                        <button type="button" class="btn btn_blue">저장</button>
+						<div class="dflex">
+							<button type="button" class="btn btn_red" style="display:none" id="scheduleDelete">삭제</button>
+		                    <button type="button" class="btn btn_blue ml10" style="display:none" id="scheduleUpdate">수정</button>
+	                        <button type="button" class="btn btn_blue ml10" style="display:none" id="scheduleSave">저장</button>
+	                        <button type="button" class="btn btn_white ml10" style="display:none" id="scheduleCancel">취소</button>
 						</div>
 	                </div>
 					
@@ -172,25 +151,25 @@
 		                        <tr>
 		                            <th>스케줄명</th>
 		                            <td>
-										<input type="text" class="input_box" value="오전 수거 시작"/>
+										<input type="text" class="input_box" id="scheduleName" value="" placeholder="스케줄명" disabled/>
 		                            </td>
 		                        </tr>
 		                        <tr>
 		                            <th>날짜</th>
 		                            <td>
-		                                <input type="text" class="input_box" value="2026-08-21"/>
+		                                <input type="text" id="scheduleDate" class="input_box" value="" placeholder="YYYY-MM-DD" disabled/>
 		                            </td>
 		                        </tr>
 		                        <tr>
 		                            <th>실행 시간</th>
 		                            <td>
-		                                <input type="time" class="input_box" value="09:00"/>
+		                                <input type="text" id="executeTime" class="input_box" value="" placeholder="HH:mm" disabled/>
 		                            </td>
 		                        </tr>
 		                        <tr>
 		                            <th>상태</th>
 		                            <td>
-		                                <select class="select_box status_select">
+		                                <select id="statusSelect" class="select_box status_select" disabled>
 		                                    <option value="WAIT">
 		                                        대기
 		                                    </option>
@@ -206,13 +185,17 @@
 		                        <tr>
 		                            <th>실행 작업</th>
 		                            <td>
-		                                <input type="text" class="input_box" value="로봇 쓰레기 수거 시작" readonly />
+		                            	<select id="taskSelect" class="select_box" style="width: 250px" disabled>
+		                                    <option value="recycleStart" selected>
+		                                        쓰레기 수거 시작
+		                                    </option>
+		                                </select>
 		                            </td>
 		                        </tr>
 		                        <tr>
 		                            <th>설명</th>
 		                            <td>
-		                                <textarea class="textarea_box">지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.</textarea>
+		                                <textarea class="textarea_box" style="color: #d9e1ea" readonly>지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.</textarea>
 		                            </td>
 		                        </tr>
 		                    </tbody>
@@ -230,8 +213,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
 
+<link rel="stylesheet" href="js/lib/flatpickr.min.css">
+<script src="/js/lib/flatpickr.min.js"></script>
+<script src="/js/lib/ko.js"></script>
+
 <script src="/js/common.js"></script>
-<script src="/js/dashboard.js"></script>
+<script src="/js/schedule.js"></script>
 
 </body>
 </html>

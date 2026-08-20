@@ -1,47 +1,93 @@
-let todayCountList
-let defaultMap
-
 const socket = new SockJS("/ws");
 const stomp = Stomp.over(socket);
 
+let currentDate = new Date();
 
 document.addEventListener("DOMContentLoaded", async () => {
+	setWeekDate(currentDate)
 	
+	flatpickr("#scheduleDate", {
+	    dateFormat: "Y-m-d",
+	    allowInput: true
+	});
+	
+	flatpickr("#executeTime", {
+	    enableTime: true,
+	    noCalendar: true,
+	    dateFormat: "H:i",
+	    time_24hr: true,
+	    allowInput: true
+	});
 });
 
-let sendRobotCommand = (command) => {
-	const data = {
-		type: "command",
-		command: command
-	}
-	
-	stomp.send("/app/command", {}, JSON.stringify(data))
-}
+let setWeekDate = (baseDate) => {
+	const dateList = document.querySelector("#dateList");
+	dateList.innerHTML = ``
+	const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+	const today = new Date();
 
-let getRobotState = async () => {
-	let data = await apiFetch("/robotStatus", "POST", {
-		eventType: "state"
-	})
-	document.querySelector("#state").innerHTML = data.status
-	if(data.status == "Running"){
-		document.querySelector("#state").style.color = "#4CAF50";
-		document.querySelector("#startBtn").classList.add("inactive-btn");
-		document.querySelector("#stopBtn").classList.remove("inactive-btn");
+	const startOfWeek = new Date(baseDate);
+	startOfWeek.setDate(baseDate.getDate() - baseDate.getDay());
 
-	    if (data.goalDestinationX != null && data.goalDestinationY != null) {
-	        destination = convertMapToCanvas(
-	            data.goalDestinationX,
-	            data.goalDestinationY
-	        );
+	for (let i = 0; i < 7; i++) {
+	    const date = new Date(startOfWeek);
+	    date.setDate(startOfWeek.getDate() + i);
+
+	    const button = document.createElement("button");
+	    button.type = "button";
+	    button.classList.add("date_item");
+
+	    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) {
+	        button.classList.add("active");
 	    }
-	}else{
-		document.querySelector("#state").style.color = "red"
-		document.querySelector("#startBtn").classList.remove("inactive-btn");
-		document.querySelector("#stopBtn").classList.add("inactive-btn");
-	    navigationPath = [];
-	    destination = null;
+
+	    button.innerHTML = `
+	        <span class="day_name">${dayNames[date.getDay()]}</span>
+	        <span class="day_num">${date.getDate()}</span>
+	    `;
+
+	    dateList.appendChild(button);
 	}
 }
+
+document.querySelector("#prevWeekBtn").addEventListener("click", () => {
+	currentDate.setDate(currentDate.getDate() - 7);
+	setWeekDate(currentDate);
+});
+
+document.querySelector("#nextWeekBtn").addEventListener("click", () => {
+	currentDate.setDate(currentDate.getDate() + 7);
+	setWeekDate(currentDate);
+});
+
+let resetData = () => {
+	document.querySelector("#scheduleName").value = ""
+	document.querySelector("#scheduleName").disabled = true;
+	document.querySelector("#scheduleDate").disabled = true;
+	document.querySelector("#executeTime").disabled = true;
+	document.querySelector("#statusSelect").disabled = true;
+}
+
+document.querySelector("#scheduleAdd").addEventListener("click", () => {
+	document.querySelector("#scheduleDelete").style.display = "none"
+	document.querySelector("#scheduleCancel").style.display = ""
+	document.querySelector("#scheduleUpdate").style.display = "none"
+	document.querySelector("#scheduleSave").style.display = ""
+	
+	document.querySelector("#scheduleName").disabled = false;
+	document.querySelector("#scheduleDate").disabled = false;
+	document.querySelector("#executeTime").disabled = false;
+	document.querySelector("#statusSelect").disabled = false;
+})
+
+document.querySelector("#scheduleCancel").addEventListener("click", () => {
+	resetData()
+	document.querySelector("#scheduleDelete").style.display = "none"
+	document.querySelector("#scheduleCancel").style.display = "none"
+	document.querySelector("#scheduleUpdate").style.display = "none"
+	document.querySelector("#scheduleSave").style.display = "none"
+})
+
 
 stomp.connect({}, function(){
     stomp.subscribe(
@@ -54,42 +100,3 @@ stomp.connect({}, function(){
         }
     );
 });
-
-//paging
-/*let paging = () => {
-    let html = document.querySelector("#pageDiv")
-
-    const totalPage = Math.ceil(eventLogCount / PAGE_SIZE);
-    const currentBlock = Math.floor((pageNumber - 1) / BLOCK_SIZE);
-    const startPage = currentBlock * BLOCK_SIZE + 1;
-    const endPage = Math.min(startPage + BLOCK_SIZE - 1, totalPage);
-    let content = "";
-
-    if(startPage > 1){
-        content += `
-            <button onclick="movePage(${startPage - BLOCK_SIZE})">&lt;</button>
-        `;
-    }
-
-    for(let i = startPage; i <= endPage; i++){
-        content += `
-            <button
-                class="${pageNumber === i ? 'active' : ''}"
-                onclick="movePage(${i})">
-                ${i}
-            </button>
-        `;
-    }
-
-    if(endPage < totalPage){
-        content += `
-            <button onclick="movePage(${startPage + BLOCK_SIZE})">&gt;</button>
-        `;
-    }
-    html.innerHTML = content;
-}
-
-let movePage = (page) => {
-    getEventLogList(page);
-    paging();
-}*/
