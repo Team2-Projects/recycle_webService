@@ -488,6 +488,462 @@
     padding:6px 12px;
 }
 
+/*schedule*/
+.schedule_content{
+	display:flex;
+  	width: auto;
+    margin: 30px auto;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding: 0 2px;
+}
+
+.schedule_card {
+  background: #fff;
+  border: 1px solid #e7ebf1;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(35, 55, 80, 0.06);
+  box-sizing: border-box;
+}
+
+.schedule_list_card{
+	width: 32%;
+	margin-right: 40px;
+	padding: 22px 20px;
+	min-height: 650px;
+}
+.schedule_detail_card{
+	width: 66%;
+	padding: 22px 24px;
+  	min-height: 650px;
+}
+
+/* 버튼 공통 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.btn_blue {
+  background: #2f80ed;
+  color: #fff;
+  border: 1px solid #2f80ed;
+}
+
+.btn_blue:hover {
+  background: #1f6fd8;
+}
+
+.btn_white {
+  background: #fff;
+  color: #2c3e50;
+  border: 1px solid #d8dee8;
+}
+
+.btn_white:hover {
+  background: #f8fafc;
+}
+
+.btn_red {
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid #f3b4b4;
+}
+
+.btn_red:hover {
+  background: #fff5f5;
+}
+
+/* 카드 상단 타이틀 영역 */
+.card_top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.card_title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e2a3a;
+}
+
+/* 날짜 가로 리스트 */
+.date_slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.date_arrow {
+  width: 42px;
+  height: 58px;
+  border: 1px solid #e1e7ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.date_list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.date_item {
+  flex: 1;
+  min-width: 58px;
+  border: 1px solid #e1e7ef;
+  border-radius: 10px;
+  text-align: center;
+  padding: 8px 4px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.date_item .day_name {
+  display: block;
+  font-size: 12px;
+  color: #7d8795;
+  margin-bottom: 6px;
+}
+
+.date_item .day_num {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #2a3442;
+  line-height: 1;
+}
+
+.date_item.active {
+  background: #2f80ed;
+  border-color: #2f80ed;
+}
+
+.date_item.active .day_name,
+.date_item.active .day_num {
+  color: #fff;
+}
+
+/* 스케줄 목록 섹션 */
+.schedule_list_voice_card{
+	height: 545px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.schedule_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  height: calc(100vh - 640px);
+}
+
+.schedule_item {
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  background: #fff;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+
+.schedule_item:hover {
+  border-color: #9ec5fb;
+  box-shadow: 0 2px 8px rgba(47, 128, 237, 0.08);
+}
+
+.schedule_item.active {
+  border-color: #2f80ed;
+  background: #f3f8ff;
+}
+
+.schedule_item_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.schedule_time {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2f80ed;
+  min-width: 90px;
+}
+
+.schedule_name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.schedule_status {
+  min-width: 56px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.schedule_status.wait {
+  color: #2563eb;
+  background: #eaf3ff;
+  border: 1px solid #c9dfff;
+}
+
+.schedule_status.done {
+  color: #16a34a;
+  background: #eaf8ee;
+  border: 1px solid #ccefd9;
+}
+
+.schedule_status.cancel {
+  color: #ef4444;
+  background: #fff0f0;
+  border: 1px solid #f6c2c2;
+}
+
+/* 음성 인식 명령 박스 */
+.voice_box {
+  margin-top: 18px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+}
+
+.voice_box_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #fbfcfe;
+  border-bottom: 1px solid #e9edf3;
+}
+
+.voice_box_title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.voice_list {
+  padding: 0 16px;
+  overflow: auto;
+  height: 170px;
+}
+
+.voice_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf1f5;
+  font-size: 14px;
+  color: #374151;
+}
+
+.voice_item:last-child {
+  border-bottom: none;
+}
+
+.voice_text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.voice_date {
+  font-size: 13px;
+  color: #7b8794;
+  white-space: nowrap;
+}
+
+.voice_more {
+  display: block;
+  text-align: center;
+  padding: 14px 0;
+  color: #2f80ed;
+  font-size: 14px;
+  font-weight: 600;
+  border-top: 1px solid #edf1f5;
+}
+
+/* 오른쪽 상세 영역 */
+.detail_title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e2a3a;
+  margin-bottom: 6px;
+}
+
+/* 상세 테이블/폼 */
+.detail_form_table {
+  width: 100%;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  overflow: auto;
+  max-heig: 640px;
+  table-layout: fixed;
+}
+
+.detail_form_table th,
+.detail_form_table td {
+  border-bottom: 1px solid #edf1f5;
+  padding: 16px 14px;
+  vertical-align: middle;
+}
+
+.detail_form_table tr:last-child th,
+.detail_form_table tr:last-child td {
+  border-bottom: none;
+}
+
+.detail_form_table th {
+  width: 160px;
+  background: #fbfcfe;
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.detail_form_table td {
+  background: #fff;
+}
+
+/* 입력 요소 */
+.input_box,
+.select_box,
+.textarea_box {
+  width: 100%;
+  border: 1px solid #d9e1ea;
+  border-radius: 10px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.input_box,
+.select_box {
+  height: 46px;
+  padding: 0 14px;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.textarea_box {
+  min-height: 110px;
+  padding: 14px;
+  font-size: 15px;
+  color: #1f2937;
+}
+
+.input_box::placeholder,
+.textarea_box::placeholder {
+  color: #a0a8b5;
+}
+
+/* 상태 select 폭 */
+.status_select {
+  width: 160px;
+}
+
+/* 토글 */
+.toggle_wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle_switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  display: inline-block;
+}
+
+.toggle_switch input {
+  display: none;
+}
+
+.toggle_slider {
+  position: absolute;
+  inset: 0;
+  background: #d8dee8;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.toggle_slider::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+
+.toggle_switch input:checked + .toggle_slider {
+  background: #2f80ed;
+}
+
+.toggle_switch input:checked + .toggle_slider::before {
+  transform: translateX(22px);
+}
+
+.toggle_text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* 버튼 영역 */
+.detail_btn_area {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.detail_btn_right {
+  display: flex;
+  gap: 10px;
+}
+
+
+
+
+
+
+
+
+
 /*setting*/
 .card-header{
     display:flex;
