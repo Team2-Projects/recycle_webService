@@ -1,17 +1,28 @@
-const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);
+/*const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);*/
 
 let currentDate = new Date();
+let selectedDate = formatDate(new Date());
+let scheduleDatePicker;
+let executeTimePicker;
 
 document.addEventListener("DOMContentLoaded", async () => {
 	setWeekDate(currentDate)
 	
-	flatpickr("#scheduleDate", {
+    const todayButton = document.querySelector(
+        `#dateList .date_item[data-date="${selectedDate}"]`
+    );
+
+    if (todayButton) {
+        todayButton.click();
+    }
+	
+	scheduleDatePicker = flatpickr("#scheduleDate", {
 	    dateFormat: "Y-m-d",
 	    allowInput: true
 	});
 	
-	flatpickr("#executeTime", {
+	executeTimePicker = flatpickr("#executeTime", {
 	    enableTime: true,
 	    noCalendar: true,
 	    dateFormat: "H:i",
@@ -36,18 +47,34 @@ let setWeekDate = (baseDate) => {
 	    const button = document.createElement("button");
 	    button.type = "button";
 	    button.classList.add("date_item");
-
-	    if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) {
-	        button.classList.add("active");
-	    }
+		button.dataset.date = formatDate(date);
 
 	    button.innerHTML = `
 	        <span class="day_name">${dayNames[date.getDay()]}</span>
 	        <span class="day_num">${date.getDate()}</span>
 	    `;
+		
+		if (button.dataset.date === selectedDate) {
+		    button.classList.add("active");
+		}
+		
+		button.addEventListener("click", () => {
+			dateClickEvent(button)
+		})
 
 	    dateList.appendChild(button);
 	}
+}
+
+let dateClickEvent = (button) => {
+	document.querySelectorAll("#dateList .date_item").forEach(item => {
+        item.classList.remove("active");
+    });
+	
+	button.classList.add("active");
+	selectedDate = button.dataset.date;
+	
+	getScheduleList(selectedDate)
 }
 
 document.querySelector("#prevWeekBtn").addEventListener("click", () => {
@@ -60,36 +87,198 @@ document.querySelector("#nextWeekBtn").addEventListener("click", () => {
 	setWeekDate(currentDate);
 });
 
-let resetData = () => {
-	document.querySelector("#scheduleName").value = ""
-	document.querySelector("#scheduleName").disabled = true;
-	document.querySelector("#scheduleDate").disabled = true;
-	document.querySelector("#executeTime").disabled = true;
-	document.querySelector("#statusSelect").disabled = true;
+let getScheduleList = async (date) => {
+	let data = {
+		scheduleDate: date	
+	}
+	let selectedUid = document.querySelector("#scheduleName").dataset.uid
+	
+	let scheduleListHtml = document.querySelector("#scheduleList")
+	scheduleListHtml.innerHTML = ``
+	let scheduleList = await apiFetch("/schedule/list", "POST", data)
+	
+	if(scheduleList.length == 0){
+		scheduleListHtml.innerHTML = `
+			<button type="button" class="schedule_item_no_data">
+                <div class="schedule_item_row">
+                    <div class="schedule_name">
+                        No Data
+                    </div>
+                </div>
+            </button>
+		`		
+	}
+	
+	scheduleList.forEach((d, i) => {
+		let state = "대기"
+		let stateClass = "wait"
+		if(d.status === "COMPLETE"){
+			state = "완료"
+			stateClass = "done"
+		}else if(d.status === "CANCEL"){
+			state = "취소"
+			stateClass = "cancel"
+		}
+		
+		let button = document.createElement("button");
+	    button.type = "button";
+	    button.classList.add("schedule_item");
+		
+		button.innerHTML = `
+            <div class="schedule_item_row">
+                <div class="schedule_time">
+                    ${d.executionTime.substring(0, 5)}
+                </div>
+                <div class="schedule_name">
+                    ${d.scheduleName}
+                </div>
+                <div class="schedule_status ${stateClass}">
+                    ${state}
+                </div>
+            </div>	 
+		`
+		
+		if (selectedUid != '' && d.uid == selectedUid) {
+		    button.classList.add("active");
+		}
+		
+		button.addEventListener("click", () => {
+	        setDetailSchedule(button, d);
+	    });
+		scheduleListHtml.appendChild(button)
+	})
 }
 
-document.querySelector("#scheduleAdd").addEventListener("click", () => {
-	document.querySelector("#scheduleDelete").style.display = "none"
+let setDetailSchedule = (button, d) => {
+	document.querySelectorAll("#scheduleList .schedule_item").forEach(item => {
+        item.classList.remove("active");
+    });
+	button.classList.add("active");
+	
+	document.querySelector("#scheduleDelete").style.display = ""
 	document.querySelector("#scheduleCancel").style.display = ""
-	document.querySelector("#scheduleUpdate").style.display = "none"
-	document.querySelector("#scheduleSave").style.display = ""
+	document.querySelector("#scheduleUpdate").style.display = ""
+	document.querySelector("#scheduleSave").style.display = "none"
+	
+	document.querySelector("#scheduleName").value = d.scheduleName
+	document.querySelector("#scheduleName").dataset.uid = d.uid
+	document.querySelector("#scheduleDate").value = d.scheduleDate
+	scheduleDatePicker.setDate(d.scheduleDate, true, "Y-m-d")
+	document.querySelector("#executeTime").value = d.executionTime.substring(0, 5)
+	executeTimePicker.setDate(d.executionTime.substring(0, 5), true, "H:i");
+	document.querySelector("#statusSelect").value = d.status
+	document.querySelector("#textareaBox").value = d.description
 	
 	document.querySelector("#scheduleName").disabled = false;
 	document.querySelector("#scheduleDate").disabled = false;
 	document.querySelector("#executeTime").disabled = false;
 	document.querySelector("#statusSelect").disabled = false;
+	document.querySelector("#taskSelect").disabled = false;
+	document.querySelector("#textareaBox").disabled = false;
+}
+
+document.querySelector("#scheduleAdd").addEventListener("click", () => {
+	document.querySelectorAll("#scheduleList .schedule_item").forEach(item => {
+        item.classList.remove("active");
+    });
+	
+	document.querySelector("#scheduleDelete").style.display = "none"
+	document.querySelector("#scheduleCancel").style.display = ""
+	document.querySelector("#scheduleUpdate").style.display = "none"
+	document.querySelector("#scheduleSave").style.display = ""
+	
+	document.querySelector("#scheduleName").value = ""
+	document.querySelector("#scheduleName").dataset.uid = ""
+	document.querySelector("#scheduleDate").value = ""
+	document.querySelector("#executeTime").value = ""
+	document.querySelector("#statusSelect").value = "WAIT"
+	document.querySelector("#textareaBox").value = ''
+	
+	document.querySelector("#scheduleName").disabled = false;
+	document.querySelector("#scheduleDate").disabled = false;
+	document.querySelector("#executeTime").disabled = false;
+	document.querySelector("#statusSelect").disabled = false;
+	document.querySelector("#taskSelect").disabled = false;
+	document.querySelector("#textareaBox").disabled = false;
 })
 
-document.querySelector("#scheduleCancel").addEventListener("click", () => {
-	resetData()
+let resetData = () => {
+	document.querySelectorAll("#scheduleList .schedule_item").forEach(item => {
+        item.classList.remove("active");
+    });
+	
 	document.querySelector("#scheduleDelete").style.display = "none"
 	document.querySelector("#scheduleCancel").style.display = "none"
 	document.querySelector("#scheduleUpdate").style.display = "none"
 	document.querySelector("#scheduleSave").style.display = "none"
+	
+	document.querySelector("#scheduleName").value = ""
+	document.querySelector("#scheduleName").dataset.uid = ""
+	document.querySelector("#scheduleName").disabled = true;
+	document.querySelector("#scheduleDate").value = ""
+	document.querySelector("#scheduleDate").disabled = true;
+	document.querySelector("#executeTime").value = ""
+	document.querySelector("#executeTime").disabled = true;
+	document.querySelector("#statusSelect").value = "WAIT"
+	document.querySelector("#statusSelect").disabled = true;
+	document.querySelector("#taskSelect").disabled = true;
+	document.querySelector("#textareaBox").value = ''
+	document.querySelector("#textareaBox").disabled = true;
+}
+
+document.querySelector("#scheduleCancel").addEventListener("click", () => {
+	resetData()
+})
+
+document.querySelector("#scheduleUpdate").addEventListener("click", async () => {
+	saveSchedule("update")
+})
+
+document.querySelector("#scheduleSave").addEventListener("click", async () => {
+	saveSchedule("insert")
+})
+
+let saveSchedule = async (type) => {
+	let data = {
+		uid: document.querySelector("#scheduleName").dataset.uid,
+		scheduleId: "SCH001",
+		scheduleName: document.querySelector("#scheduleName").value,
+		scheduleDate: document.querySelector("#scheduleDate").value,
+		executionTime: document.querySelector("#executeTime").value,
+		status: document.querySelector("#statusSelect").value,
+		task: document.querySelector("#taskSelect").selectedOptions[0].text,
+		description: document.querySelector("#textareaBox").value
+	}
+	let count = await apiFetch(`/schedule/${type}`, "POST", data)
+	
+	if(type == "insert"){
+		document.querySelector("#scheduleName").dataset.uid = count
+	}
+	
+	currentDate = new Date(data.scheduleDate);
+	setWeekDate(currentDate);
+	selectedDate = data.scheduleDate;
+	const dateButton = document.querySelector(
+        `#dateList .date_item[data-date="${data.scheduleDate}"]`
+    );
+
+    if (dateButton) {
+        dateButton.click();
+    }
+}
+
+document.querySelector("#scheduleDelete").addEventListener("click", async () => {
+	let data = {
+		uid: document.querySelector("#scheduleName").dataset.uid,
+	}
+	let count = await apiFetch("/schedule/delete", "POST", data)
+	getScheduleList(selectedDate)
+	resetData()
+	
 })
 
 
-stomp.connect({}, function(){
+/*stomp.connect({}, function(){
     stomp.subscribe(
         "/topic/status",
         function(message){
@@ -99,4 +288,4 @@ stomp.connect({}, function(){
             }
         }
     );
-});
+});*/

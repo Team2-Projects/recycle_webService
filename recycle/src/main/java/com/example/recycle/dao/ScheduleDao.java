@@ -9,6 +9,9 @@ import com.example.recycle.dto.ScheduleDto;
 @Mapper
 public interface ScheduleDao {
 
-    List<ScheduleDto> getScheduleList();
+    List<ScheduleDto> getScheduleList(ScheduleDto scheduleDto) throws Exception;
 
+	int updateSchedule(ScheduleDto scheduleDto) throws Exception;
+	int insertSchedule(ScheduleDto scheduleDto) throws Exception;
+	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
 }

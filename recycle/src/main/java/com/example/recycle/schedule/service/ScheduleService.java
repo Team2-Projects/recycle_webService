@@ -15,8 +15,23 @@ public class ScheduleService implements ScheduleServiceI {
     private ScheduleDao scheduleDao;
 
     @Override
-    public List<ScheduleDto> getScheduleList() {
-        return scheduleDao.getScheduleList();
+    public List<ScheduleDto> getScheduleList(ScheduleDto scheduleDto) throws Exception {
+        return scheduleDao.getScheduleList(scheduleDto);
     }
+
+	@Override
+	public int updateSchedule(ScheduleDto scheduleDto) throws Exception {
+		return scheduleDao.updateSchedule(scheduleDto);
+	}
+
+	@Override
+	public int insertSchedule(ScheduleDto scheduleDto) throws Exception {
+		return scheduleDao.insertSchedule(scheduleDto);
+	}
+
+	@Override
+	public int deleteSchedule(ScheduleDto scheduleDto) throws Exception {
+		return scheduleDao.deleteSchedule(scheduleDto);
+	}
 
 }

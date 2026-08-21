@@ -6,19 +6,31 @@
 
 <mapper namespace="com.example.recycle.dao.ScheduleDao">
 
-    <select id="getScheduleList"
-            resultType="com.example.recycle.dto.ScheduleDto">
-
-        SELECT
-            scheduleId,
-            scheduleName,
-            scheduleDate,
-            executionTime,
-            status,
-            task,
-            description
+    <select id="getScheduleList" parameterType="com.example.recycle.dto.ScheduleDto" resultType="com.example.recycle.dto.ScheduleDto">
+        SELECT uid, scheduleId, scheduleName, scheduleDate, executionTime, status, task, description
         FROM SCHEDULE
-
+		WHERE 1=1
+        <if test="scheduleDate != null and scheduleDate != ''">
+            AND scheduleDate = #{scheduleDate}
+        </if>
+        ORDER BY executionTime DESC
     </select>
+    
+    <update id="updateSchedule" parameterType="com.example.recycle.dto.ScheduleDto">
+    	UPDATE SCHEDULE
+    	SET scheduleName = #{scheduleName}, scheduleDate = #{scheduleDate}, executionTime = #{executionTime}
+    		, status = #{status}, task = #{task}, description = #{description}
+    	WHERE uid = #{uid}
+    </update>
+    
+    <insert id="insertSchedule" parameterType="com.example.recycle.dto.ScheduleDto" useGeneratedKeys="true" keyProperty="uid">
+    	INSERT INTO SCHEDULE (scheduleId, scheduleName, scheduleDate, executionTime, status, task, description)
+    	VALUES (#{scheduleId}, #{scheduleName}, #{scheduleDate}, #{executionTime}, #{status}, #{task}, #{description})
+    </insert>
+     
+    <delete id="deleteSchedule" parameterType="com.example.recycle.dto.ScheduleDto">
+    	DELETE FROM SCHEDULE
+    	WHERE UID = #{uid}
+    </delete>
 
 </mapper>

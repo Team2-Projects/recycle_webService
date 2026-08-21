@@ -37,43 +37,7 @@
 	                    </button>
 	                </div>
 	
-					<div class="schedule_list" id="schedule_list">
-						<button type="button" class="schedule_item_no_data">
-	                        <div class="schedule_item_row">
-	                            <div class="schedule_name">
-	                                No Data
-	                            </div>
-	                        </div>
-	                    </button>
-	                    <button type="button" class="schedule_item active">
-	                        <div class="schedule_item_row">
-	                            <div class="schedule_time">
-	                                09:00
-	                            </div>
-	                            <div class="schedule_name">
-	                                오전 수거 시작sdfasdfawrbaerbhfaw
-	                            </div>
-	                            <div class="schedule_status wait">
-	                                대기
-	                            </div>
-	                        </div>
-	                    </button>	                    
-	
-	                    <button type="button" class="schedule_item">
-	                        <div class="schedule_item_row">
-	                            <div class="schedule_time">
-	                                14:00
-	                            </div>
-	                            <div class="schedule_name">
-	                                오후 수거 시작
-	                            </div>
-	                            <div class="schedule_status wait">
-	                                대기
-	                            </div>
-	                        </div>
-	                    </button>
-
-	                </div>
+					<div class="schedule_list" id="scheduleList"></div>
 	
 	                <div class="voice_box">
 	                    <div class="voice_box_header">
@@ -138,8 +102,8 @@
 	                    </div>
 						
 						<div class="dflex">
-							<button type="button" class="btn btn_red" style="display:none" id="scheduleDelete">삭제</button>
-		                    <button type="button" class="btn btn_blue ml10" style="display:none" id="scheduleUpdate">수정</button>
+		                    <button type="button" class="btn btn_blue" style="display:none" id="scheduleUpdate">수정</button>
+		                    <button type="button" class="btn btn_red ml10" style="display:none" id="scheduleDelete">삭제</button>
 	                        <button type="button" class="btn btn_blue ml10" style="display:none" id="scheduleSave">저장</button>
 	                        <button type="button" class="btn btn_white ml10" style="display:none" id="scheduleCancel">취소</button>
 						</div>
@@ -195,7 +159,7 @@
 		                        <tr>
 		                            <th>설명</th>
 		                            <td>
-		                                <textarea class="textarea_box" style="color: #d9e1ea" readonly>지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.</textarea>
+		                                <textarea class="textarea_box" id="textareaBox" disabled></textarea>
 		                            </td>
 		                        </tr>
 		                    </tbody>

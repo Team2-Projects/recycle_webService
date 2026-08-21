@@ -6,6 +6,10 @@ import com.example.recycle.dto.ScheduleDto;
 
 public interface ScheduleServiceI {
 
-    List<ScheduleDto> getScheduleList();
+    List<ScheduleDto> getScheduleList(ScheduleDto scheduleDto) throws Exception;
+
+	int updateSchedule(ScheduleDto scheduleDto) throws Exception;
+	int insertSchedule(ScheduleDto scheduleDto) throws Exception;
+	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
 
 }
