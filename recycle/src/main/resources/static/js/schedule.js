@@ -75,6 +75,7 @@ let dateClickEvent = (button) => {
 	selectedDate = button.dataset.date;
 	
 	getScheduleList(selectedDate)
+	getVoiceCommandList(selectedDate)
 }
 
 document.querySelector("#prevWeekBtn").addEventListener("click", () => {
@@ -86,6 +87,41 @@ document.querySelector("#nextWeekBtn").addEventListener("click", () => {
 	currentDate.setDate(currentDate.getDate() + 7);
 	setWeekDate(currentDate);
 });
+
+let getVoiceCommandList = async (date) => {
+	let data = {
+		createTime: date
+	}
+	let voiceCommandList = await apiFetch("/schedule/voiceList", "POST", data)
+	
+	let voiceListHtml = document.querySelector("#voiceList")
+	voiceListHtml.innerHTML = ``
+	
+	let html = ''
+	if(voiceCommandList.length == 0){
+		html = `
+			<div class="voice_item voice_box_no_data_item">
+                <div>
+                    No Data
+                </div>
+            </div>
+		`
+	}
+	
+	voiceCommandList.forEach(d => {
+		html += `
+			<div class="voice_item">
+	            <div class="voice_text">
+	                ${d.command}
+	            </div>
+	            <div class="voice_date">
+	                ${d.createTime.split(" ")[1].substring(0, 5)}
+	            </div>
+	        </div>
+		`
+	})
+	voiceListHtml.innerHTML = html
+}
 
 let getScheduleList = async (date) => {
 	let data = {
@@ -231,12 +267,30 @@ document.querySelector("#scheduleCancel").addEventListener("click", () => {
 })
 
 document.querySelector("#scheduleUpdate").addEventListener("click", async () => {
+	if(!confirm("스케줄을 수정하시겠습니까?")){
+		return
+	}
 	saveSchedule("update")
 })
 
 document.querySelector("#scheduleSave").addEventListener("click", async () => {
+	if(!confirm("스케줄을 저장하시겠습니까?")){
+		return
+	}
 	saveSchedule("insert")
 })
+
+let checkData = (data) => {
+	if(data.scheduleName === ""){
+		return false
+	}else if(data.scheduleDate === ""){
+		return false
+	}else if(data.scheduleDate === ""){
+		return false
+	}else{
+		return true
+	}
+}
 
 let saveSchedule = async (type) => {
 	let data = {
@@ -249,7 +303,13 @@ let saveSchedule = async (type) => {
 		task: document.querySelector("#taskSelect").selectedOptions[0].text,
 		description: document.querySelector("#textareaBox").value
 	}
-	let count = await apiFetch(`/schedule/${type}`, "POST", data)
+	let count = 0;
+	if(checkData(data)){
+		count = await apiFetch(`/schedule/${type}`, "POST", data)		
+	}else{
+		confirm("데이터를 확인해 주세요.")
+		return 
+	}
 	
 	if(type == "insert"){
 		document.querySelector("#scheduleName").dataset.uid = count
@@ -268,13 +328,16 @@ let saveSchedule = async (type) => {
 }
 
 document.querySelector("#scheduleDelete").addEventListener("click", async () => {
+	if(!confirm("스케줄을 삭제하시겠습니까?")){
+		return
+	}
+	
 	let data = {
 		uid: document.querySelector("#scheduleName").dataset.uid,
 	}
 	let count = await apiFetch("/schedule/delete", "POST", data)
 	getScheduleList(selectedDate)
 	resetData()
-	
 })
 
 

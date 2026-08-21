@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.recycle.dto.ScheduleDto;
+import com.example.recycle.dto.VoiceCommandDto;
 import com.example.recycle.schedule.service.ScheduleServiceI;
 
 @Controller
@@ -47,6 +48,12 @@ public class ScheduleController {
     @ResponseBody
     public int deleteSchedule(@RequestBody ScheduleDto scheduleDto) throws Exception{
     	return scheduleService.deleteSchedule(scheduleDto);
+    }
+    
+    @PostMapping("/schedule/voiceList")
+    @ResponseBody
+    public List<VoiceCommandDto> getVoiceCommandList(@RequestBody VoiceCommandDto voiceCommandDto) throws Exception{
+    	return scheduleService.getVoiceCommandList(voiceCommandDto);
     }
 
 }

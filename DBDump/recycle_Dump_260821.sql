@@ -188,7 +188,7 @@ CREATE TABLE `schedule` (
 
 LOCK TABLES `schedule` WRITE;
 /*!40000 ALTER TABLE `schedule` DISABLE KEYS */;
-INSERT INTO `schedule` VALUES (1,'SCH001','오전 수거 시작','2026-08-22','09:00:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(2,'SCH001','오전 수거 시작','2026-08-21','12:30:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(7,'SCH001','ㅈㄷㄱ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(10,'SCH001','ㅁㄴㅇㄹ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','ㅁㄴㅇㄹ'),(11,'SCH001','ㅁㄴㅇ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(13,'SCH001','ㅁㄴㅇㄹ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','');
+INSERT INTO `schedule` VALUES (1,'SCH001','오전 수거 시작','2026-08-22','09:00:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(2,'SCH001','오전 수거 시작','2026-08-21','12:30:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(10,'SCH001','집가기','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','ㅁㄴㅇㄹ'),(11,'SCH001','ㅁㄴㅇ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','지정된 시간에 로봇 쓰레기 수거 작업을 자동으로 시작합니다.'),(13,'SCH001','ㅁㄴㅇㄹ','2026-08-18','12:00:00','WAIT','쓰레기 수거 시작','');
 /*!40000 ALTER TABLE `schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -219,6 +219,31 @@ INSERT INTO `user` VALUES (2,'1234','$2a$10$4HgE3NUT8Mb/aNKfyAkbD.etkhe7Hr4K9O6K
 UNLOCK TABLES;
 
 --
+-- Table structure for table `voicecommand`
+--
+
+DROP TABLE IF EXISTS `voicecommand`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `voicecommand` (
+  `uid` bigint NOT NULL AUTO_INCREMENT,
+  `command` text NOT NULL,
+  `createTime` datetime NOT NULL,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `voicecommand`
+--
+
+LOCK TABLES `voicecommand` WRITE;
+/*!40000 ALTER TABLE `voicecommand` DISABLE KEYS */;
+INSERT INTO `voicecommand` VALUES (1,'오전 9시에 수거 시작 등록해줘','2026-08-21 15:08:05');
+/*!40000 ALTER TABLE `voicecommand` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'recycle'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -231,4 +256,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-21 12:20:25
+-- Dump completed on 2026-08-21 16:00:16

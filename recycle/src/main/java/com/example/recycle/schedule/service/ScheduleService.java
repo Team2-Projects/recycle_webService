@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.recycle.dao.ScheduleDao;
 import com.example.recycle.dto.ScheduleDto;
+import com.example.recycle.dto.VoiceCommandDto;
 
 @Service
 public class ScheduleService implements ScheduleServiceI {
@@ -32,6 +33,11 @@ public class ScheduleService implements ScheduleServiceI {
 	@Override
 	public int deleteSchedule(ScheduleDto scheduleDto) throws Exception {
 		return scheduleDao.deleteSchedule(scheduleDto);
+	}
+
+	@Override
+	public List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception {
+		return scheduleDao.getVoiceCommandList(voiceCommandDto);
 	}
 
 }

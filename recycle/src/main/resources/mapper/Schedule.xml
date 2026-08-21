@@ -32,5 +32,14 @@
     	DELETE FROM SCHEDULE
     	WHERE UID = #{uid}
     </delete>
+    
+    <select id="getVoiceCommandList" parameterType="com.example.recycle.dto.VoiceCommandDto" resultType="com.example.recycle.dto.VoiceCommandDto">
+    	SELECT uid, command, createTime
+    	FROM voiceCommand
+    	WHERE 1=1
+    	<if test="createTime != null and createTime != ''">
+            AND DATE(createTime) = #{createTime}
+        </if>
+    </select>
 
 </mapper>
