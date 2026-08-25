@@ -97,10 +97,10 @@ let getDefaultMap = async() => {
             canvas.height = img.clientHeight;
 
             // 확인용 로봇 위치
-            robotPosition = {
+            /*robotPosition = {
                 x: canvas.width / 3,
                 y: canvas.height / 2
-            };
+            };*/
 
             drawMap();
 
@@ -174,15 +174,13 @@ stomp.connect({}, function(){
 				case "navigation_goal":
 				    destination = convertMapToCanvas(data.x, data.y);
 					
-					if(robotMapPosition){
-						apiFetch("/robotStatus/updateDestination", "POST", {
-							eventType: "state",
-			                startDestinationX: robotMapPosition.x,
-			                startDestinationY: robotMapPosition.y,
-			                goalDestinationX: data.x,
-			                goalDestinationY: data.y
-						})
-					}
+					apiFetch("/robotStatus/updateDestination", "POST", {
+						eventType: "state",
+		                startDestinationX: robotMapPosition.x ? robotMapPosition.x : null,
+		                startDestinationY: robotMapPosition.y ? robotMapPosition.y : null,
+		                goalDestinationX: data.x,
+		                goalDestinationY: data.y
+					})
 
 				    drawMap();
 				    break;
