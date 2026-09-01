@@ -38,3 +38,53 @@ function formatDate(date, { years = 0, months = 0, days = 0 } = {}) {
 
     return `${yyyy}-${mm}-${dd}`;
 }
+
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
+let robotConnectionChecked = false;
+
+let lastRobotMessageTime = Date.now();
+let robotOffline = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        if (!robotConnectionChecked) {
+            const alarm = document.querySelector("#connectAlarm");
+
+            if (alarm) {
+                alarm.style.display = "block";
+            }
+        }
+    }, 5000);
+});
+
+stomp.connect({}, function(){	
+    stomp.subscribe(
+        "/topic/status",
+        function(message){
+			robotConnectionChecked = true
+			const data = JSON.parse(message.body);
+			
+			if (data.type === "robot_connection") {
+
+	            const alarm = document.querySelector("#connectAlarm");
+
+	            if (alarm) {
+					console.log(data.status)
+	                if (data.status === "ONLINE") {
+	                    alarm.style.display = "none";
+	                }else{
+						alarm.style.display = "block";
+					}
+	            }
+	        }
+
+	        window.dispatchEvent(
+	            new CustomEvent("robotStatus", {
+	                detail: data
+	            })
+	        );
+        }
+    );
+});

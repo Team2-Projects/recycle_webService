@@ -1,12 +1,12 @@
 package com.example.recycle.websocket;
 
-import java.io.OutputStream;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/camera")
@@ -20,34 +20,19 @@ public class CameraController {
 
 
 
-    @GetMapping("/stream")
-    public void stream(HttpServletResponse response) throws Exception {
+    @GetMapping(value = "/frame", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getFrame() {
 
-        response.setContentType(
-            "multipart/x-mixed-replace; boundary=frame"
-        );
+        byte[] image = robotHandler.getLatestFrame();
 
-        OutputStream out = response.getOutputStream();
-
-        while(true){
-            byte[] image = robotHandler.getLatestFrame();
-
-            if(image != null){
-                out.write(
-                    "--frame\r\n".getBytes()
-                );
-                out.write(
-                    "Content-Type: image/jpeg\r\n\r\n"
-                    .getBytes()
-                );
-                out.write(image);
-                out.write(
-                    "\r\n".getBytes()
-                );
-                out.flush();
-            }
-
-            Thread.sleep(100);
+        // 아직 카메라 데이터가 없는 경우
+        if (image == null) {
+            return ResponseEntity.noContent().build();
         }
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image);
     }
 }

@@ -52,10 +52,4 @@ public class GeneralController {
     public RobotStatus getRobotStatus(@RequestBody RobotStatus robotStatus) throws Exception{
     	return generalService.getRobotStatus(robotStatus);
     }
-    
-    @PostMapping("/robotStatus/updateDestination")
-    @ResponseBody
-    public void updateDestination(@RequestBody RobotStatus robotStatus) throws Exception{
-    	generalService.updateRobotStatus(robotStatus);
-    }
 }

@@ -5,8 +5,8 @@ const img = document.querySelector("#mapImg");
 const canvas = document.querySelector("#mapCanvas");
 const ctx = canvas.getContext("2d");
 
-const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);
+const cameraImg = document.querySelector("#cameraImg");
+let currentCameraUrl = null;
 
 const robotImg = new Image();
 robotImg.src = "/image/robot3.png";
@@ -23,6 +23,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     getTodayCollectionCount()
 	await getDefaultMap()
 	await getRobotState()
+	
+	setInterval(getCameraFrame, 200);
 });
 
 document.querySelector("#startBtn").addEventListener("click", () => {
@@ -85,6 +87,32 @@ let getTodayCollectionCount = async () => {
     document.querySelector("#todaySuccess").innerHTML = todayCount
 }
 
+const getCameraFrame = async () => {
+    try {
+        const response = await fetch("/camera/frame");
+        // 카메라 데이터 없음
+        if (response.status === 204) {
+            return;
+        }
+		
+        if (!response.ok) {
+            return;
+        }
+		
+        const blob = await response.blob();
+        const imageUrl = URL.createObjectURL(blob);
+		
+        cameraImg.src = imageUrl;
+        if (currentCameraUrl) {
+            URL.revokeObjectURL(currentCameraUrl);
+        }
+		
+        currentCameraUrl = imageUrl;
+    } catch (error) {
+        console.log("카메라 데이터 없음");
+    }
+}
+
 let getDefaultMap = async() => {
 	let data = {}
 	defaultMap= await apiFetch("/map/getDefaultMap", "POST", data)
@@ -124,84 +152,76 @@ let convertMapToCanvas = (x, y) => {
 	}
 }
 
-stomp.connect({}, function(){
-    stomp.subscribe(
-        "/topic/status",
-        function(message){
-			let data = JSON.parse(message.body);
+window.addEventListener("robotStatus", function(event) {
+    const data = event.detail;
+	switch(data.type){
+        case "battery":					
+			let battery = Math.round(data.battery)
 			
-	        switch(data.type){
-	            case "battery":					
-					let battery = Math.round(data.battery)
-					
-	                document.querySelector("#battery").innerHTML = battery >= 100 ? 100 + " %" : battery + " %";
-					if(battery <= 30){
-						document.querySelector("#battery").style.color = "red"						
-					}else if(battery <= 70){
-						document.querySelector("#battery").style.color = "orange"
-					}else{
-						document.querySelector("#battery").style.color = "green"
-					}
-					
-	                break;
-				case "robot_status":
-					document.querySelector("#state").innerHTML = data.status
-					if(data.status == "Running"){
-						document.querySelector("#state").style.color = "#4CAF50";
-						document.querySelector("#startBtn").classList.add("inactive-btn");
-						document.querySelector("#stopBtn").classList.remove("inactive-btn");
-					}else{
-						document.querySelector("#state").style.color = "red"
-						document.querySelector("#startBtn").classList.remove("inactive-btn");
-						document.querySelector("#stopBtn").classList.add("inactive-btn");
-						
-				        navigationPath = [];
-				        destination = null;
+            document.querySelector("#battery").innerHTML = battery >= 100 ? 100 + " %" : battery + " %";
+			if(battery <= 30){
+				document.querySelector("#battery").style.color = "red"						
+			}else if(battery <= 70){
+				document.querySelector("#battery").style.color = "orange"
+			}else{
+				document.querySelector("#battery").style.color = "green"
+			}
+			
+            break;
+		case "robot_status":
+			document.querySelector("#state").innerHTML = data.status
+			if(data.status == "Running"){
+				document.querySelector("#state").style.color = "#4CAF50";
+				document.querySelector("#startBtn").classList.add("inactive-btn");
+				document.querySelector("#stopBtn").classList.remove("inactive-btn");
+			}else{
+				document.querySelector("#state").style.color = "red"
+				document.querySelector("#startBtn").classList.remove("inactive-btn");
+				document.querySelector("#stopBtn").classList.add("inactive-btn");
+				
+		        navigationPath = [];
+		        destination = null;
 
-				        drawMap();
-					}
-					break;
-	            case "robot_pose":					
-					robotMapPosition = {x: data.x, y: data.y, yaw: data.yaw};
-					robotPosition = convertMapToCanvas(data.x, data.y);		
-					
-					drawMap();
-	                break;
-				case "navigation_path":
-				    navigationPath = data.path;
-				    drawMap();
-				    break;
-				case "navigation_goal":
-				    destination = convertMapToCanvas(data.x, data.y);
-					
-					apiFetch("/robotStatus/updateDestination", "POST", {
-						eventType: "state",
-		                startDestinationX: robotMapPosition ? robotMapPosition.x : null,
-		                startDestinationY: robotMapPosition ? robotMapPosition.y : null,
-		                goalDestinationX: data.x,
-		                goalDestinationY: data.y
-					})
+		        drawMap();
+			}
+			break;
+        case "robot_pose":					
+			robotMapPosition = {x: data.x, y: data.y, yaw: data.yaw};
+			robotPosition = convertMapToCanvas(data.x, data.y);		
+			
+			drawMap();
+            break;
+		case "navigation_path":
+		    navigationPath = data.path;
+		    drawMap();
+		    break;
+		case "navigation_goal":
+			if (document.querySelector("#state").innerHTML != "Running") {
+		        destination = null;
+		        drawMap();
+		        break;
+		    }
+			
+		    destination = convertMapToCanvas(data.x, data.y);
 
-				    drawMap();
-				    break;
-				case "detection":
-					document.querySelector("#object").innerHTML = data.object_name;
-					document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
-					break;
-				case "robot_task":
-					document.querySelector("#mission").innerHTML = data.message;
-					break;
-				case "recycleHistory":
-					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
-					document.querySelector("#object").innerHTML = "-";
-					document.querySelector("#confidence").innerHTML = "- %";
-					break;
-	        }
-        }
-    );
-});
+		    drawMap();
+		    break;
+		case "detection":
+			document.querySelector("#object").innerHTML = data.object_name;
+			document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
+			break;
+		case "robot_task":
+			document.querySelector("#mission").innerHTML = data.message;
+			break;
+		case "recycleHistory":
+			document.querySelector("#todaySuccess").innerHTML = todayCount += 1
+			document.querySelector("#object").innerHTML = "-";
+			document.querySelector("#confidence").innerHTML = "- %";
+			break;
+	}
+})
 
-const areaLabels = ["플라스틱", "캔", "종이", "유리", "일반쓰레기"];
+const areaLabels = ["플라스틱", "캔", "종이", "일반쓰레기"];
 
 let getCurrentAreaIndex = () => {
     if (!robotPosition) return -1;
@@ -229,11 +249,11 @@ let getCurrentAreaIndex = () => {
 }
 
 let drawAreaLabels = () => {
-    const sectionHeight = canvas.height / 5;
+    const sectionHeight = canvas.height / 4;
     const labelX = 20;
     const currentAreaIndex = getCurrentAreaIndex();
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
         const y = i * sectionHeight;
 
         // 구역 경계선

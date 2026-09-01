@@ -42,7 +42,49 @@ public class RobotHandler extends AbstractWebSocketHandler {
     
     
     private volatile byte[] latestFrame;
+    
+    
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
+        System.out.println("로봇 WebSocket 연결됨");
+
+        template.convertAndSend(
+            "/topic/status",
+            "{\"type\":\"robot_connection\",\"status\":\"ONLINE\"}"
+        );
+    }
+    
+    @Override
+    public void afterConnectionClosed(
+            WebSocketSession session,
+            CloseStatus status) throws Exception {
+
+        System.out.println("로봇 WebSocket 연결 끊김");
+
+        template.convertAndSend(
+            "/topic/status",
+            "{\"type\":\"robot_connection\",\"status\":\"OFFLINE\"}"
+        );
+    }
+    
+    @Override
+    public void handleTransportError(
+            WebSocketSession session,
+            Throwable exception) throws Exception {
+
+        System.out.println(
+            "ROBOT TRANSPORT ERROR : "
+            + exception.getMessage()
+        );
+
+        template.convertAndSend(
+            "/topic/status",
+            "{\"type\":\"robot_connection\",\"status\":\"OFFLINE\"}"
+        );
+
+        System.out.println("ROBOT TRANSPORT ERROR → OFFLINE 전송");
+    }
  
 
     @Override
@@ -58,16 +100,44 @@ public class RobotHandler extends AbstractWebSocketHandler {
         JsonNode json = objectMapper.readTree(data);
 
         switch (json.get("type").asText()) {
-        	case "robot_task":
-        		EventLogDto eventLogDto = new EventLogDto();
-        		eventLogDto.setEventType(json.get("eventType").asText());
-        		eventLogDto.setMessage(json.get("message").asText());
-        		eventLogDto.setNote(json.get("note").asText());
-        		eventLogDto.setStatus(json.get("status").asText());
-        		
-        		eventLogServiceI.insertEventLog(eventLogDto);
-        		break;
-        	case "robot_status":
+	        case "battery":
+	        	break;
+	
+	        case "robot_pose":
+	            break;
+	            
+	        case "navigation_goal":
+	        	Double goalX = json.get("x").asDouble();
+	            Double goalY = json.get("y").asDouble();
+
+	            RobotStatus robotStatusDto = new RobotStatus();
+
+	            robotStatusDto.setEventType("state");
+	            robotStatusDto.setGoalDestinationX(goalX);
+	            robotStatusDto.setGoalDestinationY(goalY);
+
+	            generalServiceI.updateRobotStatus(robotStatusDto);
+	        	
+	        	break;
+	        
+	        case "navigation_path":
+	        	break;
+	        
+	        case "detection":
+	        	break;
+	        	
+	        case "recycleHistory":
+            	String objectName = json.has("object_name") ? json.get("object_name").asText() : "";
+                String status = json.has("status") ? json.get("status").asText() : "Success";
+                
+                RecycleHistoryDto dto = new RecycleHistoryDto();
+                dto.setObjectType(objectName);
+                dto.setStatus(status);
+                
+                recycleHistoryServiceI.insertRecycleHistory(dto);
+                break;
+                
+	        case "robot_status":
         		RobotStatus robotStatus = new RobotStatus();
 
         	    robotStatus.setEventType(json.get("eventType").asText());
@@ -83,27 +153,24 @@ public class RobotHandler extends AbstractWebSocketHandler {
         	    }
         	    
         		break;
-            case "battery":
-                break;
-
-            case "robot_pose":
-                break;
-
-            case "recycleHistory":
-            	String objectName = json.has("object_name") ? json.get("object_name").asText() : "";
-                String status = json.has("status") ? json.get("status").asText() : "Success";
-                
-                RecycleHistoryDto dto = new RecycleHistoryDto();
-                dto.setObjectType(objectName);
-                dto.setStatus(status);
-                
-                recycleHistoryServiceI.insertRecycleHistory(dto);
-                break;
+	        	
+        	case "robot_task":
+        		EventLogDto eventLogDto = new EventLogDto();
+        		eventLogDto.setEventType(json.get("eventType").asText());
+        		eventLogDto.setMessage(json.get("message").asText());
+        		eventLogDto.setNote(json.get("note").asText());
+        		eventLogDto.setStatus(json.get("status").asText());
+        		
+        		eventLogServiceI.insertEventLog(eventLogDto);
+        		break;
+        	
+        	case "system":
+        		break;
         }
 
         template.convertAndSend(
-                "/topic/status",
-                data
+            "/topic/status",
+            data
         );
     }
     
@@ -116,9 +183,6 @@ public class RobotHandler extends AbstractWebSocketHandler {
         buffer.get(bytes);
 
         latestFrame = bytes;
-        System.out.println(
-                "camera frame : " + latestFrame.length
-        );
     }
 
 

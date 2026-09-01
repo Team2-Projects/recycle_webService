@@ -13,8 +13,8 @@ let getRobotInfo = async () => {
 }
 
 // websocket
-const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);
+/*const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);*/
 
 stomp.connect({}, function(){
     console.log("WebSocket connected");

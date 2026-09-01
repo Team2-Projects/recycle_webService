@@ -7,6 +7,8 @@
 <body>
     <div class="container">
       	<div class="content">
+      		<div style="color: red; position: absolute; background: white; padding: 10px; right: 5%; display:none" id="connectAlarm">※ 로봇과의 연결이 끊겼습니다.</div>
+      		
       		<h2 class="header">Recycle Monitoring</h2>
             <nav class="tab-menu">
                 <a href="/dashboard" class="tab active">대시보드</a>
@@ -23,6 +25,7 @@
                         <h4>※ 오늘의 작업 현황</h4>
                         <span class="today-summary-span ml20">수거 <b class="ml10" id="todaySuccess">-</b></span>
                     </div>
+                    
                     <!-- Control -->
                     <div>
                         <button class="control-btn start-btn inactive-btn" id=startBtn>
@@ -60,7 +63,7 @@
                     <div class="card camera-card w46p5 mt20 mb20">
                         <h3>Camera</h3>
                         <div class="camera-area">
-                            <img class="camera-area-img" src="/camera/stream" width="640">
+                            <img class="camera-area-img" id="cameraImg" width="640">
                         </div>
                     </div>
                     <!-- Map -->
