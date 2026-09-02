@@ -3,7 +3,12 @@ const BLOCK_SIZE = 10;
 let eventLogCount
 let eventLogList
 let pageNumber = 1
+
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
 document.addEventListener("DOMContentLoaded", () => {
+	getRobotState()
     document.querySelector("#startDate").value = formatDate(new Date(), { months: -1 });
     document.querySelector("#endDate").value = formatDate(new Date());
 
@@ -130,25 +135,28 @@ let movePage = (page) => {
 }
 
 
-//socket
-/*
-const socket = new SockJS("/ws");
+let getRobotState = async () => {
+	let data = await apiFetch("/robotStatus", "POST", {
+		eventType: "state"
+	})
+	
+	if(data.connect == "DISCONNECT"){
+		document.querySelector("#connectAlarm").style.display = "block"
+	}else{
+		document.querySelector("#connectAlarm").style.display = "none"
+	}
+}
 
-const stomp = Stomp.over(socket);
-
-stomp.connect({}, function(){
-    console.log("WebSocket connected");
-
+stomp.connect({}, function(){	
     stomp.subscribe(
         "/topic/status",
-		function(message){
-			let data = JSON.parse(message.body);
-			
-	        switch(data.type){
-				case "robot_task":
-					getEventLogList(1);
-	        }
+        function(message){
+			const data = JSON.parse(message.body);
+			switch(data.type){
+				case "robot_connection":
+					getRobotState()
+					break;
+			}
         }
     );
 });
-*/

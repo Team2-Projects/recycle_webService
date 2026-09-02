@@ -5,6 +5,9 @@ const img = document.querySelector("#mapImg");
 const canvas = document.querySelector("#mapCanvas");
 const ctx = canvas.getContext("2d");
 
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
 const cameraImg = document.querySelector("#cameraImg");
 let currentCameraUrl = null;
 
@@ -19,8 +22,7 @@ let navigationPath = [];
 let destination = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-	getRobotTask()
-    getTodayCollectionCount()
+	getTodayCollectionCount()
 	await getDefaultMap()
 	await getRobotState()
 	
@@ -47,23 +49,35 @@ let getRobotState = async () => {
 	let data = await apiFetch("/robotStatus", "POST", {
 		eventType: "state"
 	})
-	document.querySelector("#state").innerHTML = data.status
-	if(data.status == "Running"){
-		document.querySelector("#state").style.color = "#4CAF50";
-		document.querySelector("#startBtn").classList.add("inactive-btn");
-		document.querySelector("#stopBtn").classList.remove("inactive-btn");
+	
+	if(data.connect == "CONNECT"){
+		document.querySelector("#state").innerHTML = data.status
+		if(data.status == "Running"){
+			document.querySelector("#state").style.color = "#4CAF50";
+			document.querySelector("#startBtn").classList.add("inactive-btn");
+			document.querySelector("#stopBtn").classList.remove("inactive-btn");
 
-	    if (data.goalDestinationX != null && data.goalDestinationY != null) {
-	        destination = convertMapToCanvas(
-	            data.goalDestinationX,
-	            data.goalDestinationY
-	        );
-	    }
+		    if (data.goalDestinationX != null && data.goalDestinationY != null) {
+		        destination = convertMapToCanvas(
+		            data.goalDestinationX,
+		            data.goalDestinationY
+		        );
+		    }
+			
+			await getRobotTask()
+		}else{
+			document.querySelector("#state").style.color = "red"
+			document.querySelector("#startBtn").classList.remove("inactive-btn");
+			document.querySelector("#stopBtn").classList.add("inactive-btn");
+		    navigationPath = [];
+		    destination = null;
+		}
 	}else{
-		document.querySelector("#state").style.color = "red"
-		document.querySelector("#startBtn").classList.remove("inactive-btn");
+		document.querySelector("#state").innerHTML = data.connect
+		document.querySelector("#state").style.color = "orange";
+		document.querySelector("#startBtn").classList.add("inactive-btn");
 		document.querySelector("#stopBtn").classList.add("inactive-btn");
-	    navigationPath = [];
+		navigationPath = [];
 	    destination = null;
 	}
 
@@ -152,74 +166,90 @@ let convertMapToCanvas = (x, y) => {
 	}
 }
 
-window.addEventListener("robotStatus", function(event) {
-    const data = event.detail;
-	switch(data.type){
-        case "battery":					
-			let battery = Math.round(data.battery)
-			
-            document.querySelector("#battery").innerHTML = battery >= 100 ? 100 + " %" : battery + " %";
-			if(battery <= 30){
-				document.querySelector("#battery").style.color = "red"						
-			}else if(battery <= 70){
-				document.querySelector("#battery").style.color = "orange"
-			}else{
-				document.querySelector("#battery").style.color = "green"
-			}
-			
-            break;
-		case "robot_status":
-			document.querySelector("#state").innerHTML = data.status
-			if(data.status == "Running"){
-				document.querySelector("#state").style.color = "#4CAF50";
-				document.querySelector("#startBtn").classList.add("inactive-btn");
-				document.querySelector("#stopBtn").classList.remove("inactive-btn");
-			}else{
-				document.querySelector("#state").style.color = "red"
-				document.querySelector("#startBtn").classList.remove("inactive-btn");
-				document.querySelector("#stopBtn").classList.add("inactive-btn");
-				
-		        navigationPath = [];
-		        destination = null;
+stomp.connect({}, function(){	
+    stomp.subscribe(
+        "/topic/status",
+        function(message){
+			const data = JSON.parse(message.body);
+			switch(data.type){
+				case "robot_connection":
+					if(data.status === "OFFLINE"){
+						getRobotState()
+						document.querySelector("#battery").innerHTML = "-"
+					}
+					break;
+		        case "battery":					
+					let battery = Math.round(data.battery)
+					
+		            document.querySelector("#battery").innerHTML = battery >= 100 ? 100 + " %" : battery + " %";
+					if(battery <= 30){
+						document.querySelector("#battery").style.color = "red"						
+					}else if(battery <= 70){
+						document.querySelector("#battery").style.color = "orange"
+					}else{
+						document.querySelector("#battery").style.color = "green"
+					}
+					
+		            break;
+				case "robot_status":
+					getRobotState()
+					document.querySelector("#state").innerHTML = data.status
+					if(data.status == "Starting"){
+						document.querySelector("#state").style.color = "#4CAF50";
+						document.querySelector("#startBtn").classList.add("inactive-btn");
+						document.querySelector("#stopBtn").classList.add("inactive-btn");
+					}else if(data.status == "Running"){
+						document.querySelector("#state").style.color = "#4CAF50";
+						document.querySelector("#startBtn").classList.add("inactive-btn");
+						document.querySelector("#stopBtn").classList.remove("inactive-btn");
+					}else{
+						document.querySelector("#state").style.color = "red"
+						document.querySelector("#startBtn").classList.remove("inactive-btn");
+						document.querySelector("#stopBtn").classList.add("inactive-btn");
+						
+				        navigationPath = [];
+				        destination = null;
 
-		        drawMap();
-			}
-			break;
-        case "robot_pose":					
-			robotMapPosition = {x: data.x, y: data.y, yaw: data.yaw};
-			robotPosition = convertMapToCanvas(data.x, data.y);		
-			
-			drawMap();
-            break;
-		case "navigation_path":
-		    navigationPath = data.path;
-		    drawMap();
-		    break;
-		case "navigation_goal":
-			if (document.querySelector("#state").innerHTML != "Running") {
-		        destination = null;
-		        drawMap();
-		        break;
-		    }
-			
-		    destination = convertMapToCanvas(data.x, data.y);
+				        drawMap();
+					}
+					break;
+		        case "robot_pose":					
+					robotMapPosition = {x: data.x, y: data.y, yaw: data.yaw};
+					robotPosition = convertMapToCanvas(data.x, data.y);		
+					
+					drawMap();
+		            break;
+				case "navigation_path":
+				    navigationPath = data.path;
+				    drawMap();
+				    break;
+				case "navigation_goal":
+					if (document.querySelector("#state").innerHTML != "Running") {
+				        destination = null;
+				        drawMap();
+				        break;
+				    }
+					
+				    destination = convertMapToCanvas(data.x, data.y);
 
-		    drawMap();
-		    break;
-		case "detection":
-			document.querySelector("#object").innerHTML = data.object_name;
-			document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
-			break;
-		case "robot_task":
-			document.querySelector("#mission").innerHTML = data.message;
-			break;
-		case "recycleHistory":
-			document.querySelector("#todaySuccess").innerHTML = todayCount += 1
-			document.querySelector("#object").innerHTML = "-";
-			document.querySelector("#confidence").innerHTML = "- %";
-			break;
-	}
-})
+				    drawMap();
+				    break;
+				case "detection":
+					document.querySelector("#object").innerHTML = data.object_name;
+					document.querySelector("#confidence").innerHTML = Number(data.confidence) ? Number(data.confidence).toFixed(1) + " %" : "- %";
+					break;
+				case "robot_task":
+					document.querySelector("#mission").innerHTML = data.message;
+					break;
+				case "recycleHistory":
+					document.querySelector("#todaySuccess").innerHTML = todayCount += 1
+					document.querySelector("#object").innerHTML = "-";
+					document.querySelector("#confidence").innerHTML = "- %";
+					break;
+			}
+        }
+    );
+});
 
 const areaLabels = ["플라스틱", "캔", "종이", "일반쓰레기"];
 

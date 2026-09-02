@@ -14,9 +14,9 @@ public class RobotStatus {
     private int robotId;
     private String eventType;
     private String status;
+    
+    private String connect;
 
-    private double startDestinationX;
-    private double startDestinationY;
     private double goalDestinationX;
     private double goalDestinationY;
 }

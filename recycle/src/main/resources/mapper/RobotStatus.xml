@@ -6,7 +6,7 @@
 <mapper namespace="com.example.recycle.dao.GeneralDao">
 
 	<select id="getRobotStatus" parameterType="com.example.recycle.dto.RobotStatus" resultType="com.example.recycle.dto.RobotStatus">
-		SELECT eventType, status, startDestinationX, startDestinationY, goalDestinationX, goalDestinationY
+		SELECT eventType, status, connect, goalDestinationX, goalDestinationY
 		FROM ROBOTSTATUS
 		WHERE eventType=#{eventType}
 	</select>
@@ -29,13 +29,9 @@
 	        <if test="status != null">
 	            status = #{status},
 	        </if>
-	
-	        <if test="startDestinationX != null">
-	            startDestinationX = #{startDestinationX},
-	        </if>
-	
-	        <if test="startDestinationY != null">
-	            startDestinationY = #{startDestinationY},
+	        
+	        <if test="connect != null">
+	            connect = #{connect},
 	        </if>
 	
 	        <if test="goalDestinationX != null">

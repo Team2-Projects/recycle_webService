@@ -10,10 +10,37 @@ let dateChartData
 let typeChart
 let dateChart
 
-/*const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);*/
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
+let getRobotState = async () => {
+	let data = await apiFetch("/robotStatus", "POST", {
+		eventType: "state"
+	})
+	
+	if(data.connect == "DISCONNECT"){
+		document.querySelector("#connectAlarm").style.display = "block"
+	}else{
+		document.querySelector("#connectAlarm").style.display = "none"
+	}
+}
+
+stomp.connect({}, function(){	
+    stomp.subscribe(
+        "/topic/status",
+        function(message){
+			const data = JSON.parse(message.body);
+			switch(data.type){
+				case "robot_connection":
+					getRobotState()
+					break;
+			}
+        }
+    );
+});
 
 document.addEventListener("DOMContentLoaded", () => {
+	getRobotState()
     document.querySelector("#startDate").value = formatDate(new Date(), { months: -1 });
     document.querySelector("#endDate").value = formatDate(new Date());
 

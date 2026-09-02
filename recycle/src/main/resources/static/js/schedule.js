@@ -1,5 +1,31 @@
-/*const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);*/
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
+
+let getRobotState = async () => {
+	let data = await apiFetch("/robotStatus", "POST", {
+		eventType: "state"
+	})
+	
+	if(data.connect == "DISCONNECT"){
+		document.querySelector("#connectAlarm").style.display = "block"
+	}else{
+		document.querySelector("#connectAlarm").style.display = "none"
+	}
+}
+
+stomp.connect({}, function(){	
+    stomp.subscribe(
+        "/topic/status",
+        function(message){
+			const data = JSON.parse(message.body);
+			switch(data.type){
+				case "robot_connection":
+					getRobotState()
+					break;
+			}
+        }
+    );
+});
 
 let currentDate = new Date();
 let selectedDate = formatDate(new Date());
@@ -7,6 +33,7 @@ let scheduleDatePicker;
 let executeTimePicker;
 
 document.addEventListener("DOMContentLoaded", async () => {
+	getRobotState()
 	setWeekDate(currentDate)
 	
     const todayButton = document.querySelector(

@@ -46,46 +46,33 @@ public class RobotHandler extends AbstractWebSocketHandler {
     
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    	RobotStatus robotStatus = new RobotStatus();
 
-        System.out.println("로봇 WebSocket 연결됨");
-
-        template.convertAndSend(
+    	robotStatus.setEventType("state");
+	    robotStatus.setConnect("CONNECT");
+	    
+	    generalServiceI.updateRobotStatus(robotStatus);
+	    
+	    template.convertAndSend(
             "/topic/status",
             "{\"type\":\"robot_connection\",\"status\":\"ONLINE\"}"
         );
     }
     
     @Override
-    public void afterConnectionClosed(
-            WebSocketSession session,
-            CloseStatus status) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    	RobotStatus robotStatus = new RobotStatus();
 
-        System.out.println("로봇 WebSocket 연결 끊김");
-
-        template.convertAndSend(
+    	robotStatus.setEventType("state");
+	    robotStatus.setConnect("DISCONNECT");
+	    
+	    generalServiceI.updateRobotStatus(robotStatus);
+	    
+	    template.convertAndSend(
             "/topic/status",
             "{\"type\":\"robot_connection\",\"status\":\"OFFLINE\"}"
         );
     }
-    
-    @Override
-    public void handleTransportError(
-            WebSocketSession session,
-            Throwable exception) throws Exception {
-
-        System.out.println(
-            "ROBOT TRANSPORT ERROR : "
-            + exception.getMessage()
-        );
-
-        template.convertAndSend(
-            "/topic/status",
-            "{\"type\":\"robot_connection\",\"status\":\"OFFLINE\"}"
-        );
-
-        System.out.println("ROBOT TRANSPORT ERROR → OFFLINE 전송");
-    }
- 
 
     @Override
     protected void handleTextMessage(
@@ -93,10 +80,7 @@ public class RobotHandler extends AbstractWebSocketHandler {
             TextMessage message)
             throws Exception {
 
-        String data = message.getPayload();
-
-        System.out.println(data);
-        
+        String data = message.getPayload();        
         JsonNode json = objectMapper.readTree(data);
 
         switch (json.get("type").asText()) {

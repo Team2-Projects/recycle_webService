@@ -1,6 +1,7 @@
 let robotInfo
 
 document.addEventListener("DOMContentLoaded", () => {
+	getRobotState()
     getRobotInfo()
 });
 
@@ -13,17 +14,25 @@ let getRobotInfo = async () => {
 }
 
 // websocket
-/*const socket = new SockJS("/ws");
-const stomp = Stomp.over(socket);*/
+const socket = new SockJS("/ws");
+const stomp = Stomp.over(socket);
 
-stomp.connect({}, function(){
-    console.log("WebSocket connected");
-    
+let getRobotState = async () => {
+	let data = await apiFetch("/robotStatus", "POST", {
+		eventType: "state"
+	})
+	
+	if(data.connect == "DISCONNECT"){
+		document.querySelector("#connectAlarm").style.display = "block"
+	}else{
+		document.querySelector("#connectAlarm").style.display = "none"
+	}
+}
+
+stomp.connect({}, function(){    
     stomp.subscribe(
         "/topic/status",
         function(message){
-            console.log(message.body);
-
             try {
                 const data = JSON.parse(message.body);
 
@@ -45,7 +54,9 @@ stomp.connect({}, function(){
                     if (diskText) diskText.innerText = `${diskUsage}%`;
                     const diskProgressBar = document.querySelector("#disk_progress-bar");
                     if (diskProgressBar) diskProgressBar.style.width = `${diskUsage}%`;
-                }
+                }else if(data.type === "robot_connection"){
+					getRobotState()
+				}
 								
             } catch (e) {
                 console.error("JSON 파싱 및 UI 업데이트 오류:", e);
