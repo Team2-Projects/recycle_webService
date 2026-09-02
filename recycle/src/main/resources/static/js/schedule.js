@@ -22,6 +22,16 @@ stomp.connect({}, function(){
 				case "robot_connection":
 					getRobotState()
 					break;
+					
+				case "schedule_command":
+			        console.log(
+			            "예약 START 송신 확인 :",
+			            data.command,
+			            data.status
+			        );
+
+			        getScheduleList(selectedDate);
+			        break;
 			}
         }
     );
@@ -175,12 +185,16 @@ let getScheduleList = async (date) => {
 	scheduleList.forEach((d, i) => {
 		let state = "대기"
 		let stateClass = "wait"
-		if(d.status === "COMPLETE"){
-			state = "완료"
-			stateClass = "done"
+
+		if(d.status === "RUNNING"){
+		    state = "실행중"
+		    stateClass = "running"
+		}else if(d.status === "COMPLETE"){
+		    state = "완료"
+		    stateClass = "done"
 		}else if(d.status === "CANCEL"){
-			state = "취소"
-			stateClass = "cancel"
+		    state = "취소"
+		    stateClass = "cancel"
 		}
 		
 		let button = document.createElement("button");
@@ -312,7 +326,7 @@ let checkData = (data) => {
 		return false
 	}else if(data.scheduleDate === ""){
 		return false
-	}else if(data.scheduleDate === ""){
+	}else if(data.executionTime === ""){
 		return false
 	}else{
 		return true
@@ -367,15 +381,3 @@ document.querySelector("#scheduleDelete").addEventListener("click", async () => 
 	resetData()
 })
 
-
-/*stomp.connect({}, function(){
-    stomp.subscribe(
-        "/topic/status",
-        function(message){
-			let data = JSON.parse(message.body);
-			
-	        switch(data.type){
-            }
-        }
-    );
-});*/

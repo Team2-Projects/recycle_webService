@@ -7,13 +7,12 @@ import lombok.Data;
 
 @Data
 public class ScheduleDto {
-	private int uid;
-    private String scheduleId;     
-    private String scheduleName;   
-    private String scheduleDate; 
-    private String executionTime; 
-    private String status;        
-    private String task;          
-    private String description;   
-
+    private long uid;
+    private String scheduleId;
+    private String scheduleName;
+    private String scheduleDate;
+    private String executionTime;
+    private String status;
+    private String task;
+    private String description;
 }

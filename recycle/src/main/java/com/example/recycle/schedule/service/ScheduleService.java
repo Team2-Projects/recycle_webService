@@ -39,5 +39,10 @@ public class ScheduleService implements ScheduleServiceI {
 	public List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception {
 		return scheduleDao.getVoiceCommandList(voiceCommandDto);
 	}
+	
+	@Override
+	public List<ScheduleDto> getReadyScheduleList() throws Exception {
+	    return scheduleDao.getReadyScheduleList();
+	}
 
 }

@@ -17,4 +17,6 @@ public interface ScheduleDao {
 	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
 
 	List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception;
+	
+	List<ScheduleDto> getReadyScheduleList() throws Exception;
 }

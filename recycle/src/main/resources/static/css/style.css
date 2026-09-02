@@ -723,7 +723,11 @@
   background: #eaf3ff;
   border: 1px solid #c9dfff;
 }
-
+.schedule_status.running {
+  color: #d97706;
+  background: #fff7e6;
+  border: 1px solid #f5d08a;
+}
 .schedule_status.done {
   color: #16a34a;
   background: #eaf8ee;
