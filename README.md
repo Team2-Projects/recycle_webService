@@ -95,7 +95,7 @@ com.recycle
 - 이벤트 발생 시간 기록
 
 ### 쓰레기 수거 현황
-<img width="1919" height="944" alt="쓰래기수거현황" src="https://github.com/user-attachments/assets/d5c89ba3-5dc9-4c14-a328-4b22885de5b8" />
+<img width="1919" height="943" alt="쓰래기수거현황" src="https://github.com/user-attachments/assets/8da8aa4b-d6b1-4bb2-b8d9-2d76389cdac4" />
 
 #### 주요 기능
 - 기간동안 수거한 전체 쓰레기 개수, 품목별 쓰레기 개수 표시
