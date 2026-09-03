@@ -51,12 +51,11 @@ let getRobotState = async () => {
 	
 	if(data.connect == "CONNECT"){
 		document.querySelector("#state").innerHTML = data.status
+		await getRobotTask();
 		if(data.status == "Running"){
 			document.querySelector("#state").style.color = "#4CAF50";
 			document.querySelector("#startBtn").classList.add("inactive-btn");
 			document.querySelector("#stopBtn").classList.remove("inactive-btn");
-			
-			await getRobotTask()
 		}else{
 			document.querySelector("#state").style.color = "red"
 			document.querySelector("#startBtn").classList.remove("inactive-btn");
@@ -185,7 +184,6 @@ stomp.connect({}, function(){
 					
 		            break;
 				case "robot_status":
-					getRobotTask()
 					document.querySelector("#state").innerHTML = data.status
 					if(data.status == "Starting"){
 						document.querySelector("#state").style.color = "#4CAF50";
