@@ -92,21 +92,7 @@ public class RobotHandler extends AbstractWebSocketHandler {
 	        	break;
 	
 	        case "robot_pose":
-	            break;
-	            
-	        case "navigation_goal":
-	        	Double goalX = json.get("x").asDouble();
-	            Double goalY = json.get("y").asDouble();
-
-	            RobotStatus robotStatusDto = new RobotStatus();
-
-	            robotStatusDto.setEventType("state");
-	            robotStatusDto.setGoalDestinationX(goalX);
-	            robotStatusDto.setGoalDestinationY(goalY);
-
-	            generalServiceI.updateRobotStatus(robotStatusDto);
-	        	
-	        	break;
+	            break;	            
 	        
 	        case "navigation_path":
 	        	break;

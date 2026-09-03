@@ -19,7 +19,6 @@ let todayCount
 let robotPosition = null;
 let robotMapPosition = null;
 let navigationPath = [];
-let destination = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
 	getTodayCollectionCount()
@@ -56,13 +55,6 @@ let getRobotState = async () => {
 			document.querySelector("#state").style.color = "#4CAF50";
 			document.querySelector("#startBtn").classList.add("inactive-btn");
 			document.querySelector("#stopBtn").classList.remove("inactive-btn");
-
-		    if (data.goalDestinationX != null && data.goalDestinationY != null) {
-		        destination = convertMapToCanvas(
-		            data.goalDestinationX,
-		            data.goalDestinationY
-		        );
-		    }
 			
 			await getRobotTask()
 		}else{
@@ -70,7 +62,6 @@ let getRobotState = async () => {
 			document.querySelector("#startBtn").classList.remove("inactive-btn");
 			document.querySelector("#stopBtn").classList.add("inactive-btn");
 		    navigationPath = [];
-		    destination = null;
 		}
 	}else{
 		document.querySelector("#state").innerHTML = data.connect
@@ -78,7 +69,6 @@ let getRobotState = async () => {
 		document.querySelector("#startBtn").classList.add("inactive-btn");
 		document.querySelector("#stopBtn").classList.add("inactive-btn");
 		navigationPath = [];
-	    destination = null;
 	}
 
     drawMap();
@@ -176,6 +166,9 @@ stomp.connect({}, function(){
 					if(data.status === "OFFLINE"){
 						getRobotState()
 						document.querySelector("#battery").innerHTML = "-"
+						document.querySelector("#mission").innerHTML = "-"
+						document.querySelector("#object").innerHTML = "-";
+						document.querySelector("#confidence").innerHTML = "- %";
 					}
 					break;
 		        case "battery":					
@@ -192,7 +185,6 @@ stomp.connect({}, function(){
 					
 		            break;
 				case "robot_status":
-					getRobotState()
 					document.querySelector("#state").innerHTML = data.status
 					if(data.status == "Starting"){
 						document.querySelector("#state").style.color = "#4CAF50";
@@ -202,13 +194,16 @@ stomp.connect({}, function(){
 						document.querySelector("#state").style.color = "#4CAF50";
 						document.querySelector("#startBtn").classList.add("inactive-btn");
 						document.querySelector("#stopBtn").classList.remove("inactive-btn");
+					}else if(data.status === "Return Home"){
+						document.querySelector("#state").style.color = "red"
+						document.querySelector("#startBtn").classList.add("inactive-btn");
+						document.querySelector("#stopBtn").classList.add("inactive-btn");
 					}else{
 						document.querySelector("#state").style.color = "red"
 						document.querySelector("#startBtn").classList.remove("inactive-btn");
 						document.querySelector("#stopBtn").classList.add("inactive-btn");
 						
 				        navigationPath = [];
-				        destination = null;
 
 				        drawMap();
 					}
@@ -221,17 +216,6 @@ stomp.connect({}, function(){
 		            break;
 				case "navigation_path":
 				    navigationPath = data.path;
-				    drawMap();
-				    break;
-				case "navigation_goal":
-					if (document.querySelector("#state").innerHTML != "Running") {
-				        destination = null;
-				        drawMap();
-				        break;
-				    }
-					
-				    destination = convertMapToCanvas(data.x, data.y);
-
 				    drawMap();
 				    break;
 				case "detection":
@@ -330,8 +314,6 @@ let drawMap = () => {
 	
     // 앞으로 갈 길
     drawNavigationPath();
-    // 목적지
-    drawDestination();
     // 현재 로봇은 제일 마지막
     drawRobot();
 }
@@ -390,26 +372,4 @@ let drawNavigationPath = () => {
     ctx.lineWidth = 3;
 
     ctx.stroke();
-}
-
-let drawDestination = () => {
-	if(!destination)
-        return;
-
-    ctx.beginPath();
-
-    ctx.arc(destination.x, destination.y, 8, 0, Math.PI * 2);
-
-    ctx.fillStyle = "green";
-
-    ctx.fill();
-
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "green";
-
-    ctx.fillText(
-        "Goal",
-        destination.x + 10,
-        destination.y - 10
-    );
 }
