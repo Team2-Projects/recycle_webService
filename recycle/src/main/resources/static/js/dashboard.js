@@ -185,6 +185,7 @@ stomp.connect({}, function(){
 					
 		            break;
 				case "robot_status":
+					getRobotTask()
 					document.querySelector("#state").innerHTML = data.status
 					if(data.status == "Starting"){
 						document.querySelector("#state").style.color = "#4CAF50";
