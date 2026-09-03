@@ -162,8 +162,8 @@ stomp.connect({}, function(){
 			const data = JSON.parse(message.body);
 			switch(data.type){
 				case "robot_connection":
+					getRobotState()
 					if(data.status === "OFFLINE"){
-						getRobotState()
 						document.querySelector("#battery").innerHTML = "-"
 						document.querySelector("#mission").innerHTML = "-"
 						document.querySelector("#object").innerHTML = "-";
