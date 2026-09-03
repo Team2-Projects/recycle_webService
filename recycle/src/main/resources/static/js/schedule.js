@@ -19,11 +19,12 @@ stomp.connect({}, function(){
         function(message){
 			const data = JSON.parse(message.body);
 			switch(data.type){
-				case "robot_connection":
-					getRobotState()
-					break;
-					
-				case "schedule_command":
+
+			    case "robot_connection":
+			        getRobotState();
+			        break;
+
+			    case "schedule_command":
 			        console.log(
 			            "예약 START 송신 확인 :",
 			            data.command,
@@ -32,6 +33,16 @@ stomp.connect({}, function(){
 
 			        getScheduleList(selectedDate);
 			        break;
+
+			    case "schedule_status":
+			        console.log(
+			            "스케줄 상태 변경 :",
+			            data.status
+			        );
+
+			        getScheduleList(selectedDate);
+			        break;
+			
 			}
         }
     );
@@ -334,36 +345,44 @@ let checkData = (data) => {
 }
 
 let saveSchedule = async (type) => {
-	let data = {
-		uid: document.querySelector("#scheduleName").dataset.uid,
-		scheduleId: "SCH001",
-		scheduleName: document.querySelector("#scheduleName").value,
-		scheduleDate: document.querySelector("#scheduleDate").value,
-		executionTime: document.querySelector("#executeTime").value,
-		status: document.querySelector("#statusSelect").value,
-		task: document.querySelector("#taskSelect").selectedOptions[0].text,
-		description: document.querySelector("#textareaBox").value
-	}
-	let count = 0;
-	if(checkData(data)){
-		count = await apiFetch(`/schedule/${type}`, "POST", data)		
-	}else{
-		confirm("데이터를 확인해 주세요.")
-		return 
-	}
-	
-	if(type == "insert"){
-		document.querySelector("#scheduleName").dataset.uid = count
-	}
-	
-	currentDate = new Date(data.scheduleDate);
-	setWeekDate(currentDate);
-	selectedDate = data.scheduleDate;
-	const dateButton = document.querySelector(
+
+    let data = {
+        scheduleId: "SCH001",
+        scheduleName: document.querySelector("#scheduleName").value,
+        scheduleDate: document.querySelector("#scheduleDate").value,
+        executionTime: document.querySelector("#executeTime").value,
+        status: document.querySelector("#statusSelect").value,
+        task: document.querySelector("#taskSelect").selectedOptions[0].text,
+        description: document.querySelector("#textareaBox").value
+    }
+
+    if(type === "update"){
+        data.uid =
+            document.querySelector("#scheduleName").dataset.uid;
+    }
+
+    let count = 0;
+
+    if(checkData(data)){
+        count = await apiFetch(
+            `/schedule/${type}`,
+            "POST",
+            data
+        );
+    }else{
+        alert("데이터를 확인해 주세요.");
+        return;
+    }
+
+    currentDate = new Date(data.scheduleDate);
+    setWeekDate(currentDate);
+    selectedDate = data.scheduleDate;
+
+    const dateButton = document.querySelector(
         `#dateList .date_item[data-date="${data.scheduleDate}"]`
     );
 
-    if (dateButton) {
+    if(dateButton){
         dateButton.click();
     }
 }

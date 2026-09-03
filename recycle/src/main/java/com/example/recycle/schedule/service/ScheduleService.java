@@ -26,8 +26,8 @@ public class ScheduleService implements ScheduleServiceI {
 	}
 
 	@Override
-	public int insertSchedule(ScheduleDto scheduleDto) throws Exception {
-		return scheduleDao.insertSchedule(scheduleDto);
+	public long insertSchedule(ScheduleDto scheduleDto) throws Exception {
+	    return scheduleDao.insertSchedule(scheduleDto);
 	}
 
 	@Override
@@ -43,6 +43,11 @@ public class ScheduleService implements ScheduleServiceI {
 	@Override
 	public List<ScheduleDto> getReadyScheduleList() throws Exception {
 	    return scheduleDao.getReadyScheduleList();
+	}
+	
+	@Override
+	public int updateRunningScheduleStatus(String status) throws Exception {
+	    return scheduleDao.updateRunningScheduleStatus(status);
 	}
 
 }

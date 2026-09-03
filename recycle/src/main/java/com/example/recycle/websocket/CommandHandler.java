@@ -12,7 +12,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class CommandHandler extends TextWebSocketHandler {
 
     private WebSocketSession session;
+    
+    @Override
+    public void afterConnectionEstablished(
+            WebSocketSession session) {
 
+        System.out.println("COMMAND CONNECT : " + session.getId());
+
+        this.session = session;
+    }
 
     public void sendToRos(String data) throws Exception {
 

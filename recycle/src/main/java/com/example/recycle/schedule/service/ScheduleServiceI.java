@@ -10,9 +10,10 @@ public interface ScheduleServiceI {
     List<ScheduleDto> getScheduleList(ScheduleDto scheduleDto) throws Exception;
 
 	int updateSchedule(ScheduleDto scheduleDto) throws Exception;
-	int insertSchedule(ScheduleDto scheduleDto) throws Exception;
+	long insertSchedule(ScheduleDto scheduleDto) throws Exception;
 	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
-
+	int updateRunningScheduleStatus(String status) throws Exception;
+	
 	List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception;
 	
 	List<ScheduleDto> getReadyScheduleList() throws Exception;

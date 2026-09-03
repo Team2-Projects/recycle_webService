@@ -2,6 +2,7 @@ package com.example.recycle.websocket;
 
 import java.nio.ByteBuffer;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import com.example.recycle.general.service.GeneralServiceI;
 import com.example.recycle.recycleHistory.service.RecycleHistoryServiceI;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.recycle.schedule.service.ScheduleServiceI;
 
 @Component
 public class RobotHandler extends AbstractWebSocketHandler {
@@ -40,6 +42,8 @@ public class RobotHandler extends AbstractWebSocketHandler {
     @Autowired
     private RecycleHistoryServiceI recycleHistoryServiceI;
     
+    @Autowired
+    private ScheduleServiceI scheduleServiceI;
     
     private volatile byte[] latestFrame;
     
@@ -147,6 +151,18 @@ public class RobotHandler extends AbstractWebSocketHandler {
         		
         		eventLogServiceI.insertEventLog(eventLogDto);
         		break;
+        	
+        	case "schedule_status":
+        	    String scheduleStatus = json.get("status").asText();
+
+        	    if ("COMPLETE".equals(scheduleStatus)) {
+        	        scheduleServiceI.updateRunningScheduleStatus("COMPLETE");
+        	    } 
+        	    else if ("CANCEL".equals(scheduleStatus)) {
+        	        scheduleServiceI.updateRunningScheduleStatus("CANCEL");
+        	    }
+
+        	    break;
         	
         	case "system":
         		break;

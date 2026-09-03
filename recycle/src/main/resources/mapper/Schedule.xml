@@ -34,6 +34,15 @@
 	        description = #{description}
 	    WHERE uid = #{uid}
 	</update>
+	
+	<update id="updateRunningScheduleStatus"
+	        parameterType="String">
+	
+	    UPDATE schedule
+	    SET status = #{status}
+	    WHERE status = 'RUNNING'
+	
+	</update>
 
     <insert id="insertSchedule"
 	        parameterType="com.example.recycle.dto.ScheduleDto"
@@ -91,7 +100,7 @@
 	    FROM schedule
 	    WHERE scheduleDate = CURDATE()
 	      AND executionTime BETWEEN
-	          SUBTIME(CURTIME(), '00:00:05')
+	          SUBTIME(CURTIME(), '00:01:00')
 	          AND CURTIME()
 	      AND status = 'WAIT'
 	

@@ -39,7 +39,7 @@ public class ScheduleController {
     
     @PostMapping("/schedule/insert")
     @ResponseBody
-    public int insertSchedule(@RequestBody ScheduleDto scheduleDto) throws Exception{
+    public long insertSchedule(@RequestBody ScheduleDto scheduleDto) throws Exception{
     	scheduleService.insertSchedule(scheduleDto);
     	return scheduleDto.getUid();
     }
