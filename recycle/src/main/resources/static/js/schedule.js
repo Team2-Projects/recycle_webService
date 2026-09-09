@@ -42,6 +42,10 @@ stomp.connect({}, function(){
 
 			        getScheduleList(selectedDate);
 			        break;
+				
+				case "voice_msg":
+					getVoiceCommandList(selectedDate);
+					break;
 			
 			}
         }

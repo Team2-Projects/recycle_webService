@@ -13,6 +13,7 @@ public interface ScheduleServiceI {
 	long insertSchedule(ScheduleDto scheduleDto) throws Exception;
 	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
 	int updateRunningScheduleStatus(String status) throws Exception;
+	int insertCommand(VoiceCommandDto voiceCommandDto) throws Exception;
 	
 	List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception;
 	

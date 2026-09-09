@@ -16,6 +16,7 @@ public interface ScheduleDao {
 	int updateSchedule(ScheduleDto scheduleDto) throws Exception;
 	int insertSchedule(ScheduleDto scheduleDto) throws Exception;
 	int deleteSchedule(ScheduleDto scheduleDto) throws Exception;
+	int insertCommand(VoiceCommandDto voiceCommandDto) throws Exception;
 	int updateRunningScheduleStatus(@Param("status") String status) throws Exception;
 
 	List<VoiceCommandDto> getVoiceCommandList(VoiceCommandDto voiceCommandDto) throws Exception;

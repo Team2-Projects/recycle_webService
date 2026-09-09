@@ -16,6 +16,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.example.recycle.dto.EventLogDto;
 import com.example.recycle.dto.RecycleHistoryDto;
 import com.example.recycle.dto.RobotStatus;
+import com.example.recycle.dto.VoiceCommandDto;
 import com.example.recycle.eventLog.service.EventLogServiceI;
 import com.example.recycle.general.service.GeneralServiceI;
 import com.example.recycle.recycleHistory.service.RecycleHistoryServiceI;
@@ -149,7 +150,11 @@ public class RobotHandler extends AbstractWebSocketHandler {
         	    }
 
         	    break;
-        	
+        	case "voice_msg":
+        		VoiceCommandDto voicecommandDto = new VoiceCommandDto();
+        		voicecommandDto.setCommand(json.get("msg").asText());
+        		scheduleServiceI.insertCommand(voicecommandDto);
+        		break;
         	case "system":
         		break;
         }

@@ -70,7 +70,7 @@
 	        #{description}
 	    )
 	</insert>
-
+	
     <delete id="deleteSchedule"
 	        parameterType="com.example.recycle.dto.ScheduleDto">
 	
@@ -105,5 +105,14 @@
 	      AND status = 'WAIT'
 	
 	</select>
-
+	
+	<insert id="insertCommand"
+	        parameterType="com.example.recycle.dto.VoiceCommandDto"
+	        useGeneratedKeys="true"
+	        keyProperty="uid">
+		INSERT INTO voicecommand(command, createTime)
+		VALUES(#{command},
+	        SYSDATE());
+	</insert>
+	
 </mapper>

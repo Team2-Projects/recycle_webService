@@ -49,5 +49,9 @@ public class ScheduleService implements ScheduleServiceI {
 	public int updateRunningScheduleStatus(String status) throws Exception {
 	    return scheduleDao.updateRunningScheduleStatus(status);
 	}
+	@Override
+	public int insertCommand(VoiceCommandDto voiceCommandDto) throws Exception {
+		return scheduleDao.insertCommand(voiceCommandDto);
+	}
 
 }
