@@ -152,7 +152,9 @@ public class RobotHandler extends AbstractWebSocketHandler {
         	    break;
         	case "voice_msg":
         		VoiceCommandDto voicecommandDto = new VoiceCommandDto();
-        		voicecommandDto.setCommand(json.get("msg").asText());
+        		voicecommandDto.setCommand(json.get("command").asText());
+        		voicecommandDto.setCommandIdx(json.get("commandIdx").asInt());
+        		voicecommandDto.setStartTime(json.get("startTime").asText());
         		scheduleServiceI.insertCommand(voicecommandDto);
         		break;
         	case "system":

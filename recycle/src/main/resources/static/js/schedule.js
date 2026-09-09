@@ -25,25 +25,29 @@ stomp.connect({}, function(){
 			        break;
 
 			    case "schedule_command":
-			        console.log(
-			            "예약 START 송신 확인 :",
-			            data.command,
-			            data.status
-			        );
-
 			        getScheduleList(selectedDate);
 			        break;
 
 			    case "schedule_status":
-			        console.log(
-			            "스케줄 상태 변경 :",
-			            data.status
-			        );
-
 			        getScheduleList(selectedDate);
 			        break;
 				
 				case "voice_msg":
+					if(data.commandIdx == 1){
+						let today = formatDate(new Date())
+						console.log(data.startTime)
+						let parameterData = {
+							scheduleId: "SCH001",
+					        scheduleName: today + " " + data.startTime + "출발 스케줄",
+					        scheduleDate: today,
+					        executionTime: data.startTime,
+					        status: "WAIT",
+					        task: "쓰레기 수거 시작",
+					        description: "지정된 시간에 쓰레기 수거 작업을 자동으로 시작합니다." 
+						}
+						saveVoiceSchedule(parameterData)						
+					}
+					
 					getVoiceCommandList(selectedDate);
 					break;
 			
@@ -195,6 +199,8 @@ let getScheduleList = async (date) => {
                 </div>
             </button>
 		`		
+		
+		resetData()
 	}
 	
 	scheduleList.forEach((d, i) => {
@@ -379,6 +385,21 @@ let saveSchedule = async (type) => {
     }
 
     currentDate = new Date(data.scheduleDate);
+    setWeekDate(currentDate);
+    selectedDate = data.scheduleDate;
+
+    const dateButton = document.querySelector(
+        `#dateList .date_item[data-date="${data.scheduleDate}"]`
+    );
+
+    if(dateButton){
+        dateButton.click();
+    }
+}
+
+let saveVoiceSchedule = async (data) => {
+	await apiFetch(`/schedule/insert`, "POST", data);
+	currentDate = new Date(data.scheduleDate);
     setWeekDate(currentDate);
     selectedDate = data.scheduleDate;
 

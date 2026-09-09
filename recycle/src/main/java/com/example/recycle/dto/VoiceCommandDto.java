@@ -9,6 +9,8 @@ import lombok.Data;
 public class VoiceCommandDto {
 	private int uid;
     private String command;     
+    private int commandIdx;
+    private String startTime;
     private String createTime;   
 
 }

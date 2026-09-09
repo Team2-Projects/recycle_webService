@@ -110,9 +110,8 @@
 	        parameterType="com.example.recycle.dto.VoiceCommandDto"
 	        useGeneratedKeys="true"
 	        keyProperty="uid">
-		INSERT INTO voicecommand(command, createTime)
-		VALUES(#{command},
-	        SYSDATE());
+		INSERT INTO voicecommand(command, commandIdx, startTime, createTime)
+		VALUES(#{command}, #{commandIdx}, #{startTime}, SYSDATE());
 	</insert>
 	
 </mapper>
