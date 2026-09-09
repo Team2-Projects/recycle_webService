@@ -35,10 +35,9 @@ stomp.connect({}, function(){
 				case "voice_msg":
 					if(data.commandIdx == 1){
 						let today = formatDate(new Date())
-						console.log(data.startTime)
 						let parameterData = {
 							scheduleId: "SCH001",
-					        scheduleName: today + " " + data.startTime + "출발 스케줄",
+					        scheduleName: today + " " + data.startTime + " 출발 스케줄",
 					        scheduleDate: today,
 					        executionTime: data.startTime,
 					        status: "WAIT",
